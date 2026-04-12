@@ -1,0 +1,243 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// --- ENUMS ---
+
+enum UserRole {
+  ADMIN
+  MITRA
+  CUSTOMER
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum BookingStatus {
+  WAITING_PAYMENT
+  CONFIRMED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SETTLEMENT
+  EXPIRED
+  FAILED
+  REFUNDED
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+// --- MODELS ---
+
+model User {
+  id            String        @id @default(uuid())
+  email         String        @unique
+  password      String
+  name          String
+  role          UserRole      @default(CUSTOMER)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relations
+  mitraProfile  MitraProfile? 
+  bookings      Booking[]
+  reviews       Review[]
+}
+
+model MitraProfile {
+  id                String           @id @default(uuid())
+  userId            String           @unique
+  user              User             @relation(fields: [userId], references: [id])
+  
+  // Info Bisnis
+  shopName          String
+  address           String           @db.Text
+  latitude          Float?
+  longitude         Float?
+  
+  // Data Verifikasi (Approval)
+  nik               String           @unique
+  npwp              String?          @unique
+  identityPhoto     String           @db.VarChar(255)
+  approvalStatus    ApprovalStatus   @default(PENDING)
+  rejectionReason   String?          @db.Text
+
+  // Fitur Buka/Tutup Mendadak
+  isManualClosed    Boolean          @default(false)
+  manualCloseReason String?          @db.Text
+
+  // Relations
+  operatingHours    OperatingHour[]
+  units             PlaystationUnit[]
+  snacks            Snack[]
+  bookings          Booking[]
+  reviews           Review[]
+  photos            MitraPhoto[]
+
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+}
+
+model MitraPhoto {
+  id             String       @id @default(uuid())
+  mitraId        String
+  mitra          MitraProfile @relation(fields: [mitraId], references: [id])
+  
+  photoUrl       String       @db.VarChar(255) // URL dari Cloudinary/S3/Local Storage
+  isMain         Boolean      @default(false)  // Untuk foto sampul utama
+  caption        String?      @db.VarChar(100) // Contoh: "Area VIP", "Parkir Luas"
+
+  createdAt      DateTime     @default(now())
+}
+
+model OperatingHour {
+  id          String       @id @default(uuid())
+  mitraId     String
+  mitra       MitraProfile @relation(fields: [mitraId], references: [id])
+
+  day         DayOfWeek
+  openTime    String       // Contoh: "08:00"
+  closeTime   String       // Contoh: "22:00"
+  isOpen      Boolean      @default(true)
+
+  @@unique([mitraId, day])
+}
+
+model PlaystationUnit {
+  id           String          @id @default(uuid())
+  mitraId      String
+  mitra        MitraProfile    @relation(fields: [mitraId], references: [id])
+  
+  name         String          // Contoh: "PS5 VIP 01"
+  type         String          // Contoh: "PS5", "PS4"
+  pricePerHour Decimal         @db.Decimal(12, 2)
+  isAvailable  Boolean         @default(true) // Untuk maintenance unit tertentu
+
+  bookings     Booking[]
+
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+model Snack {
+  id           String          @id @default(uuid())
+  mitraId      String
+  mitra        MitraProfile    @relation(fields: [mitraId], references: [id])
+  
+  name         String
+  price        Decimal         @db.Decimal(12, 2)
+  stock        Int             @default(0)
+
+  orderItems   BookingSnack[]
+
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+model Booking {
+  id           String          @id @default(uuid())
+  userId       String
+  user         User            @relation(fields: [userId], references: [id])
+  
+  mitraId      String
+  mitra        MitraProfile    @relation(fields: [mitraId], references: [id])
+
+  unitId       String
+  unit         PlaystationUnit @relation(fields: [unitId], references: [id])
+
+  // DATA DIRI PENYEWA (Untuk Jaminan/Bukti ke Mitra)
+  renterName   String          // Nama sesuai identitas
+  renterNik    String          // NIK KTP penyewa
+  renterPhone  String          // Nomor HP aktif saat booking
+  renterPhoto  String?         @db.VarChar(255) // Optional: Foto KTP penyewa jika diwajibkan
+
+  // Waktu & Durasi
+  startTime    DateTime
+  endTime      DateTime
+  durationHour Int
+  
+  // Total & Status
+  totalPrice   Decimal         @db.Decimal(12, 2)
+  status       BookingStatus   @default(WAITING_PAYMENT)
+
+  // Relations
+  payment      Payment?
+  snacks       BookingSnack[]
+  review       Review?
+
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@index([startTime, endTime])
+}
+
+model BookingSnack {
+  id             String  @id @default(uuid())
+  bookingId      String
+  booking        Booking @relation(fields: [bookingId], references: [id])
+  
+  snackId        String
+  snack          Snack   @relation(fields: [snackId], references: [id])
+  
+  quantity       Int
+  priceAtBooking Decimal @db.Decimal(12, 2)
+}
+
+model Payment {
+  id                String        @id @default(uuid())
+  bookingId         String        @unique
+  booking           Booking       @relation(fields: [bookingId], references: [id])
+  
+  externalId        String?       @unique // ID dari Payment Gateway (Midtrans/Xendit)
+  amount            Decimal       @db.Decimal(12, 2)
+  status            PaymentStatus @default(PENDING)
+  checkoutUrl       String?       @db.Text
+  
+  paidAt            DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
+
+model Review {
+  id           String       @id @default(uuid())
+  bookingId    String       @unique
+  booking      Booking      @relation(fields: [bookingId], references: [id])
+  
+  userId       String
+  user         User         @relation(fields: [userId], references: [id])
+  
+  mitraId      String
+  mitra        MitraProfile @relation(fields: [mitraId], references: [id])
+
+  rating       Int          // Skala 1-5
+  comment      String?      @db.Text
+  
+  createdAt    DateTime     @default(now())
+}
