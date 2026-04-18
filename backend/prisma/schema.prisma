@@ -5,8 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -57,7 +56,7 @@ enum DayOfWeek {
 // --- MODELS ---
 
 model User {
-  id            String        @id @default(uuid())
+  id            Int        @id @default(autoincrement())
   email         String        @unique
   password      String
   name          String
@@ -72,8 +71,8 @@ model User {
 }
 
 model MitraProfile {
-  id                String           @id @default(uuid())
-  userId            String           @unique
+  id                Int           @id @default(autoincrement())
+  userId            Int           @unique
   user              User             @relation(fields: [userId], references: [id])
   
   // Info Bisnis
@@ -106,8 +105,8 @@ model MitraProfile {
 }
 
 model MitraPhoto {
-  id             String       @id @default(uuid())
-  mitraId        String
+  id             Int       @id @default(autoincrement())
+  mitraId        Int
   mitra          MitraProfile @relation(fields: [mitraId], references: [id])
   
   photoUrl       String       @db.VarChar(255) // URL dari Cloudinary/S3/Local Storage
@@ -118,8 +117,8 @@ model MitraPhoto {
 }
 
 model OperatingHour {
-  id          String       @id @default(uuid())
-  mitraId     String
+  id          Int       @id @default(autoincrement())
+  mitraId     Int
   mitra       MitraProfile @relation(fields: [mitraId], references: [id])
 
   day         DayOfWeek
@@ -131,8 +130,8 @@ model OperatingHour {
 }
 
 model PlaystationUnit {
-  id           String          @id @default(uuid())
-  mitraId      String
+  id           Int          @id @default(autoincrement())
+  mitraId      Int
   mitra        MitraProfile    @relation(fields: [mitraId], references: [id])
   
   name         String          // Contoh: "PS5 VIP 01"
@@ -147,8 +146,8 @@ model PlaystationUnit {
 }
 
 model Snack {
-  id           String          @id @default(uuid())
-  mitraId      String
+  id           Int          @id @default(autoincrement())
+  mitraId      Int
   mitra        MitraProfile    @relation(fields: [mitraId], references: [id])
   
   name         String
@@ -162,14 +161,14 @@ model Snack {
 }
 
 model Booking {
-  id           String          @id @default(uuid())
-  userId       String
+  id           Int          @id @default(autoincrement())
+  userId       Int
   user         User            @relation(fields: [userId], references: [id])
   
-  mitraId      String
+  mitraId      Int
   mitra        MitraProfile    @relation(fields: [mitraId], references: [id])
 
-  unitId       String
+  unitId       Int
   unit         PlaystationUnit @relation(fields: [unitId], references: [id])
 
   // DATA DIRI PENYEWA (Untuk Jaminan/Bukti ke Mitra)
@@ -199,11 +198,11 @@ model Booking {
 }
 
 model BookingSnack {
-  id             String  @id @default(uuid())
-  bookingId      String
+  id             Int  @id @default(autoincrement())
+  bookingId      Int
   booking        Booking @relation(fields: [bookingId], references: [id])
   
-  snackId        String
+  snackId        Int
   snack          Snack   @relation(fields: [snackId], references: [id])
   
   quantity       Int
@@ -211,8 +210,8 @@ model BookingSnack {
 }
 
 model Payment {
-  id                String        @id @default(uuid())
-  bookingId         String        @unique
+  id                Int        @id @default(autoincrement())
+  bookingId         Int        @unique
   booking           Booking       @relation(fields: [bookingId], references: [id])
   
   externalId        String?       @unique // ID dari Payment Gateway (Midtrans/Xendit)
@@ -226,14 +225,14 @@ model Payment {
 }
 
 model Review {
-  id           String       @id @default(uuid())
-  bookingId    String       @unique
+  id           Int       @id @default(autoincrement())
+  bookingId    Int       @unique
   booking      Booking      @relation(fields: [bookingId], references: [id])
   
-  userId       String
+  userId       Int
   user         User         @relation(fields: [userId], references: [id])
   
-  mitraId      String
+  mitraId      Int
   mitra        MitraProfile @relation(fields: [mitraId], references: [id])
 
   rating       Int          // Skala 1-5
