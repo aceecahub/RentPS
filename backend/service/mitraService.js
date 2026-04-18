@@ -58,3 +58,26 @@ export const updateApprovalStatus = async (mitraId, approvalStatus, rejectionRea
         },
     })
 }
+
+
+export const manualCloseAndOpen = async (mitraId, isManualClosed, manualCloseReason = null) => {
+    return await prisma.mitraProfile.update({
+        where: { id: parseInt(mitraId) },
+        data: { 
+            isManualClosed: isManualClosed,
+            manualCloseReason: manualCloseReason 
+        },
+    })
+}
+
+export const operatingHours = async (mitraId, day, openTime, closeTime, isOpen) => {
+    return await prisma.operatingHour.create({
+        data: {
+            mitraId: parseInt(mitraId),
+            day: day,
+            openTime: openTime,
+            closeTime: closeTime,
+            isOpen: isOpen
+        }
+    })
+}

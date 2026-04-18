@@ -16,8 +16,8 @@ app.get('/', (req, res) => {
 app.use(cors())
 app.use(express.json())
 
+// auth
 app.use("/api/auth", authRoutes)
-
 // mitra
 app.use("/api/mitra", mitraRoutes)
 
