@@ -6,6 +6,7 @@ import cors from "cors"
 import authRoutes from "./routes/authRoutes.js"
 import mitraRoutes from "./routes/mitraRoutes.js"
 import psRoutes from "./routes/psRoutes.js"
+import snackRoutes from "./routes/snackRoutes.js"
 dotenv.config()
 
 const app = express()
@@ -23,6 +24,8 @@ app.use("/api/auth", authRoutes)
 app.use("/api/mitra", mitraRoutes)
 // ps
 app.use("/api/ps", psRoutes)
+// snack
+app.use("/api/snack", snackRoutes)
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on http://localhost:${process.env.PORT}`)
