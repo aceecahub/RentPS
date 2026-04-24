@@ -24,14 +24,14 @@ export const registerMitra = async (inputData) => {
                     latitude: latitude ? parseFloat(latitude) : null,
                     longitude: longitude ? parseFloat(longitude) : null,
                     nik,
-                    npwp, // NPWP Opsional di schema kamu
+                    npwp,
                     identityPhoto, // Foto KTP
                     approvalStatus: 'PENDING',
-                    // Relasi ke tabel MitraPhoto (Foto-foto tempat usaha)
+                    // Relasi ke tabel MitraPhoto
                     photos: {
                         create: photos && photos.length > 0 ? photos.map((url, index) => ({
                             photoUrl: url,
-                            isMain: index === 0, // Foto pertama otomatis jadi foto utama
+                            isMain: index === 0,
                             caption: `Foto Ruangan ${index + 1}`
                         })) : []
                     }
@@ -79,5 +79,11 @@ export const operatingHours = async (mitraId, day, openTime, closeTime, isOpen) 
             closeTime: closeTime,
             isOpen: isOpen
         }
+    })
+}
+
+export const findMitraByUserId = async (userId) => {
+    return await prisma.mitraProfile.findUnique({
+        where: { userId: parseInt(userId) }
     })
 }

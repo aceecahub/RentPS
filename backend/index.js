@@ -7,6 +7,7 @@ import authRoutes from "./routes/authRoutes.js"
 import mitraRoutes from "./routes/mitraRoutes.js"
 import psRoutes from "./routes/psRoutes.js"
 import snackRoutes from "./routes/snackRoutes.js"
+import bookingRoutes from "./routes/bookingRoutes.js"
 dotenv.config()
 
 const app = express()
@@ -26,6 +27,8 @@ app.use("/api/mitra", mitraRoutes)
 app.use("/api/ps", psRoutes)
 // snack
 app.use("/api/snack", snackRoutes)
+// booking
+app.use("/api/booking", bookingRoutes)
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on http://localhost:${process.env.PORT}`)
