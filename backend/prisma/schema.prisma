@@ -66,8 +66,23 @@ model User {
 
   // Relations
   mitraProfile  MitraProfile? 
+  userProfile   UserProfile?
   bookings      Booking[]
   reviews       Review[]
+}
+
+model UserProfile {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  user        User     @relation(fields: [userId], references: [id])
+  
+  phone       String?  @db.VarChar(20)
+  nik         String?  @db.VarChar(20)
+  address     String?  @db.Text
+  avatarUrl   String?  @db.VarChar(255)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model MitraProfile {
@@ -88,11 +103,11 @@ model MitraProfile {
   approvalStatus    ApprovalStatus   @default(PENDING)
   rejectionReason   String?          @db.Text
 
-  // Fitur Buka/Tutup Mendadak
+  // Fitur Buka/Tutup daddakan
   isManualClosed    Boolean          @default(false)
   manualCloseReason String?          @db.Text
 
-  // Relations
+  // Relasi
   operatingHours    OperatingHour[]
   units             PlaystationUnit[]
   snacks            Snack[]

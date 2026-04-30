@@ -35,7 +35,7 @@ export const loginService =  async (data) => {
     })
 
     if (!user) {
-        throw new Error("User tidak ditemukan")
+        throw new Error("Email atau Password salah!")
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
