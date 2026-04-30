@@ -10,16 +10,16 @@ export const createBooking = async (inputData) => {
     try {
         return await prisma.$transaction(async (tx) => {
             // 0. Check Overlap
-            const startStr = new Date(startTime).toISOString()
-            const endStr = new Date(endTime).toISOString()
+            const startDate = new Date(startTime)
+            const endDate = new Date(endTime)
 
             const overlap = await tx.booking.findFirst({
                 where: {
                     unitId: parseInt(unitId),
                     status: { notIn: ["CANCELLED"] },
                     AND: [
-                        { startTime: { lt: endStr } },
-                        { endTime: { gt: startStr } }
+                        { startTime: { lt: endDate } },
+                        { endTime: { gt: startDate } }
                     ]
                 }
             })

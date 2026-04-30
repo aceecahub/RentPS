@@ -9,6 +9,7 @@ const router = express.Router()
 router.post("/", bookingController.createBooking)
 router.get("/user", bookingController.getUserBookings)
 router.get("/mitra", bookingController.getMitraBookings)
+router.get("/unit/:unitId/schedule", bookingController.getUnitSchedule)
 router.get("/:id", bookingController.getBookingById)
 router.patch("/:id/status", bookingController.updateStatus)
 
