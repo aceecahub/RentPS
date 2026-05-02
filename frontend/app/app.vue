@@ -1,15 +1,29 @@
 <script setup>
 const route = useRoute()
 const isAuthPage = computed(() => route.path.startsWith('/auth'))
+const isAdminPage = computed(() => route.path.startsWith('/admin'))
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col selection:bg-primary-500 selection:text-navy">
-    <TheNavbar v-if="!isAuthPage" />
-    <main class="flex-grow overflow-x-hidden">
-      <NuxtPage />
-    </main>
-    <TheFooter v-if="!isAuthPage" />
+  <div class="min-h-screen flex selection:bg-primary-500 selection:text-navy">
+    <!-- Admin Layout -->
+    <template v-if="isAdminPage && !isAuthPage">
+      <TheAdminSidebar />
+      <main class="flex-grow overflow-y-auto h-screen bg-gray-50/30">
+        <NuxtPage />
+      </main>
+    </template>
+
+    <!-- Normal Layout -->
+    <template v-else>
+      <div class="flex flex-col w-full">
+        <TheNavbar v-if="!isAuthPage" />
+        <main class="flex-grow overflow-x-hidden">
+          <NuxtPage />
+        </main>
+        <TheFooter v-if="!isAuthPage" />
+      </div>
+    </template>
   </div>
 </template>
 

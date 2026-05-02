@@ -1,8 +1,9 @@
 import express from "express"
-import { getUserProfile, updateUserProfile } from "../controller/userController.js"
+import { getAllUsers, getUserProfile, updateUserProfile } from "../controller/userController.js"
 
 const router = express.Router()
 
+router.get("/all", getAllUsers)
 router.get("/profile/:userId", getUserProfile)
 router.put("/profile/:userId", updateUserProfile)
 
