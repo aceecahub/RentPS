@@ -265,6 +265,7 @@ const tabs = [
               <div class="space-y-3">
                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Jenis Console</label>
                 <select v-model="unitForm.type" class="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-6 py-4 text-navy font-black focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner appearance-none" required>
+                  <option value="PS3">PlayStation 2</option>
                   <option value="PS3">PlayStation 3</option>
                   <option value="PS4">PlayStation 4</option>
                   <option value="PS5">PlayStation 5</option>

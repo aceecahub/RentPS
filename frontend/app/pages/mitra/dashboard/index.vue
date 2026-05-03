@@ -205,33 +205,45 @@ const recentBookings = computed(() => {
         </div>
 
         <!-- Verification Status Card -->
-        <div class="bg-navy rounded-[40px] p-8 text-white overflow-hidden relative shadow-2xl shadow-navy/20 group">
-          <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-primary-500/10 blur-[80px] rounded-full group-hover:bg-primary-500/20 transition-all"></div>
+        <div class="rounded-[40px] p-8 text-white overflow-hidden relative shadow-2xl transition-all group"
+          :class="statsRes?.data?.approvalStatus === 'REJECTED' ? 'bg-red-600 shadow-red-900/20' : 'bg-navy shadow-navy/20'">
+          <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-white/10 blur-[80px] rounded-full group-hover:bg-white/20 transition-all"></div>
           
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-8">
-              <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-100/40">Status Verifikasi</p>
-              <Icon name="heroicons:shield-check-20-solid" class="w-6 h-6 text-primary-500" />
+              <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Status Verifikasi</p>
+              <Icon :name="statsRes?.data?.approvalStatus === 'APPROVED' ? 'heroicons:shield-check-20-solid' : 'heroicons:shield-exclamation-20-solid'" class="w-6 h-6 text-primary-500" />
             </div>
             
             <div class="space-y-2 mb-8">
               <p class="text-3xl font-black uppercase tracking-tighter">{{ statsRes?.data?.approvalStatus || 'PENDING' }}</p>
-              <p class="text-xs font-medium text-primary-100/60 leading-relaxed">
-                {{ statsRes?.data?.approvalStatus === 'APPROVED' 
-                  ? 'Selamat! Akun Anda telah diverifikasi penuh oleh tim RentPS.' 
-                  : 'Mohon tunggu, tim kami sedang memvalidasi data toko Anda.' 
-                }}
+              
+              <!-- Message based on status -->
+              <p v-if="statsRes?.data?.approvalStatus === 'APPROVED'" class="text-xs font-medium text-primary-100/60 leading-relaxed">
+                Selamat! Akun Anda telah diverifikasi penuh oleh tim RentPS.
+              </p>
+              <p v-else-if="statsRes?.data?.approvalStatus === 'REJECTED'" class="text-xs font-medium text-white/80 leading-relaxed">
+                <span class="block font-black text-white mb-2 underline decoration-white/30 underline-offset-4">Alasan Penolakan:</span>
+                "{{ statsRes?.data?.rejectionReason }}"
+                <span class="block mt-4 text-[10px] font-black uppercase tracking-wider text-white/60 bg-black/10 p-3 rounded-2xl border border-white/10">
+                  Mohon perbaiki data Anda di Pengaturan Toko agar dapat ditinjau kembali.
+                </span>
+              </p>
+              <p v-else class="text-xs font-medium text-primary-100/60 leading-relaxed">
+                Mohon tunggu, tim kami sedang memvalidasi data toko Anda.
               </p>
             </div>
 
             <div class="h-2 bg-white/10 rounded-full overflow-hidden">
               <div 
-                class="h-full bg-primary-500 transition-all duration-1000" 
-                :style="{ width: statsRes?.data?.approvalStatus === 'APPROVED' ? '100%' : '40%' }"
+                class="h-full transition-all duration-1000" 
+                :class="statsRes?.data?.approvalStatus === 'APPROVED' ? 'bg-primary-500' : (statsRes?.data?.approvalStatus === 'REJECTED' ? 'bg-white' : 'bg-primary-500/50')"
+                :style="{ width: statsRes?.data?.approvalStatus === 'APPROVED' ? '100%' : (statsRes?.data?.approvalStatus === 'REJECTED' ? '100%' : '40%') }"
               ></div>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </div>

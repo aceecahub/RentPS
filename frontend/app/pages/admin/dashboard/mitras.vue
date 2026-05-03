@@ -239,8 +239,14 @@ const formatDay = (day) => {
                 </div>
                 <p v-if="selectedMitra.description" class="text-sm text-gray-500 font-medium mt-5 bg-gray-50 rounded-2xl p-4 leading-relaxed">{{ selectedMitra.description }}</p>
 
+                <!-- Rejection Reason if exists -->
+                <div v-if="selectedMitra.rejectionReason && selectedMitra.approvalStatus === 'REJECTED'" class="mt-5 p-4 bg-red-50 border border-red-100 rounded-2xl">
+                  <p class="text-[10px] font-black uppercase tracking-widest text-red-400 mb-1">Alasan Penolakan Sebelumnya:</p>
+                  <p class="text-sm text-red-600 font-bold leading-relaxed">{{ selectedMitra.rejectionReason }}</p>
+                </div>
+
                 <!-- Action Buttons -->
-                <div v-if="selectedMitra.approvalStatus === 'PENDING'" class="flex gap-3 mt-5">
+                <div v-if="selectedMitra.approvalStatus !== 'APPROVED'" class="flex gap-3 mt-5">
                   <button @click="approveMitra(selectedMitra.id)" class="flex-1 bg-navy text-white py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary-500 hover:text-navy transition-all shadow-lg shadow-navy/10 active:scale-95">
                     ✓ Approve Mitra
                   </button>
@@ -248,6 +254,13 @@ const formatDay = (day) => {
                     ✗ Tolak
                   </button>
                 </div>
+                <div v-else class="mt-5">
+                   <button @click="rejectMitra(selectedMitra.id)" class="w-full bg-gray-50 text-gray-400 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-50 hover:text-red-500 transition-all border border-gray-100 active:scale-95">
+                    ✗ Cabut Approval
+                  </button>
+                </div>
+
+
               </div>
 
               <!-- Units -->

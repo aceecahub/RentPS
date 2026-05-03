@@ -129,15 +129,15 @@ const stats = computed(() => [
         </div>
       </NuxtLink>
 
-      <NuxtLink to="/admin/dashboard/users" class="group bg-navy rounded-[40px] border border-navy shadow-xl shadow-navy/20 p-10 hover:bg-primary-500 transition-all duration-500 overflow-hidden relative">
+      <NuxtLink to="/admin/dashboard/users" class="group bg-navy rounded-[40px] border border-navy shadow-xl shadow-navy/20 p-10 hover:bg-primary-800 transition-all duration-500 overflow-hidden relative">
         <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-primary-500/10 blur-[60px] rounded-full group-hover:bg-primary-500/20 transition-all"></div>
         <div class="relative z-10">
           <div class="w-16 h-16 bg-white/10 rounded-3xl flex items-center justify-center mb-8 group-hover:rotate-12 transition-transform border border-white/10">
             <Icon name="heroicons:users-20-solid" class="w-8 h-8 text-primary-400 group-hover:text-navy" />
           </div>
-          <h2 class="text-2xl font-black text-white group-hover:text-navy tracking-tight transition-colors">Kelola User</h2>
-          <p class="text-white/60 group-hover:text-navy/70 font-medium mt-2 leading-relaxed transition-colors">Lihat daftar pengguna, profil lengkap, data NIK, dan riwayat transaksi mereka.</p>
-          <div class="flex items-center mt-8 text-primary-400 group-hover:text-navy font-black text-xs uppercase tracking-widest group-hover:translate-x-2 transition-all">
+          <h2 class="text-2xl font-black text-white group-hover:text-white tracking-tight transition-colors">Kelola User</h2>
+          <p class="text-white/60 group-hover:text-white font-medium mt-2 leading-relaxed transition-colors">Lihat daftar pengguna, profil lengkap, data NIK, dan riwayat transaksi mereka.</p>
+          <div class="flex items-center mt-8 text-primary-400 group-hover:text-white font-black text-xs uppercase tracking-widest group-hover:translate-x-2 transition-all">
             Buka Halaman
             <Icon name="heroicons:arrow-right-20-solid" class="ml-2 w-4 h-4" />
           </div>

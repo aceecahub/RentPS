@@ -34,8 +34,33 @@ onMounted(async () => {
   }
 })
 
+const onFileChange = async (e) => {
+  const file = e.target.files[0]
+  if (!file) return
+
+  const formData = new FormData()
+  formData.append('avatar', file)
+
+  try {
+    const res = await $fetch(`${config.public.apiBase}/user/avatar/${user.value.id}`, {
+      method: 'POST',
+      body: formData
+    })
+    
+    if (res.success) {
+      profileForm.avatarUrl = res.data.avatarUrl
+      // Update local storage and user state for immediate header update
+      user.value.avatarUrl = res.data.avatarUrl
+      localStorage.setItem('auth_user', JSON.stringify(user.value))
+    }
+  } catch (err) {
+    alert('Gagal mengunggah avatar')
+  }
+}
+
 const isSaving = ref(false)
 const saveProfile = async () => {
+
   isSaving.value = true
   try {
     await $fetch(`${config.public.apiBase}/user/profile/${user.value.id}`, {
@@ -90,25 +115,57 @@ const saveProfile = async () => {
         
         <!-- Avatar Section -->
         <div class="relative z-10 flex flex-col md:flex-row items-center gap-10">
-          <div class="relative">
-            <div class="w-32 h-32 rounded-full bg-navy border-4 border-white shadow-2xl overflow-hidden flex-shrink-0 flex items-center justify-center transform transition-transform group-hover:scale-105 duration-500">
+          <div class="relative group/avatar">
+            <div class="w-32 h-32 rounded-full bg-navy border-4 border-white shadow-2xl overflow-hidden flex-shrink-0 flex items-center justify-center transform transition-all duration-500 group-hover/avatar:scale-105 group-hover/avatar:rotate-3">
               <img v-if="profileForm.avatarUrl" :src="profileForm.avatarUrl" class="w-full h-full object-cover" alt="Profile" />
-              <Icon v-else name="heroicons:user-solid" class="w-16 h-16 text-primary-400/50" />
+              <div v-else class="w-full h-full flex items-center justify-center bg-navy">
+                 <Icon name="heroicons:user-solid" class="w-16 h-16 text-primary-400/50" />
+              </div>
+              <!-- Overlay on hover -->
+              <div @click="$refs.fileInput.click()" class="absolute inset-0 bg-navy/60 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                <Icon name="heroicons:camera-20-solid" class="w-8 h-8 text-primary-500" />
+              </div>
             </div>
-            <div class="absolute bottom-1 right-1 w-8 h-8 bg-primary-500 rounded-full border-4 border-white flex items-center justify-center">
-              <Icon name="heroicons:camera-20-solid" class="w-4 h-4 text-navy" />
+            <div class="absolute bottom-1 right-1 w-8 h-8 bg-primary-500 rounded-full border-4 border-white flex items-center justify-center shadow-lg">
+              <Icon name="heroicons:pencil-20-solid" class="w-4 h-4 text-navy" />
             </div>
           </div>
           
-          <div class="flex-grow w-full space-y-3">
-            <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Profile Photo URL</label>
-            <div class="relative">
-              <Icon name="heroicons:link-20-solid" class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 w-5 h-5" />
-              <input v-model="profileForm.avatarUrl" type="url" placeholder="https://..." class="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl pl-16 pr-8 py-5 text-navy font-bold focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner">
+          <div class="flex-grow w-full space-y-4">
+            <div>
+              <h3 class="text-xl font-black text-navy tracking-tight">Foto Profil</h3>
+              <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Upload foto terbaikmu (Max 2MB)</p>
             </div>
-            <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest ml-1 leading-relaxed">Paste a link to your profile picture from Imgur or other image hosts.</p>
+            
+            <input 
+              type="file" 
+              ref="fileInput" 
+              class="hidden" 
+              accept="image/*"
+              @change="onFileChange"
+            >
+            
+            <div class="flex gap-3">
+              <button 
+                type="button"
+                @click="$refs.fileInput.click()"
+                class="bg-gray-50 text-navy border-2 border-gray-100 px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:border-primary-500 hover:bg-white transition-all flex items-center"
+              >
+                <Icon name="heroicons:arrow-up-tray-20-solid" class="mr-2 w-4 h-4" />
+                Pilih Foto
+              </button>
+              <button 
+                v-if="profileForm.avatarUrl"
+                type="button"
+                @click="profileForm.avatarUrl = ''"
+                class="text-red-500 font-black text-[10px] uppercase tracking-widest hover:underline"
+              >
+                Hapus
+              </button>
+            </div>
           </div>
         </div>
+
 
         <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-10">
           <!-- Name -->

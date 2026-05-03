@@ -95,7 +95,13 @@ if (process.client) {
                     class="w-11 h-11 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-navy hover:bg-white hover:border-primary-200 hover:shadow-lg transition-all"
                     :title="user?.role === 'CUSTOMER' ? 'Edit Profil' : 'Profil'"
                   >
-                    <Icon name="heroicons:user-20-solid" class="w-6 h-6" />
+                    <img 
+                      v-if="user?.avatarUrl"
+                      :src="user.avatarUrl"
+                      :alt="user.name"
+                      class="w-full h-full object-cover rounded-2xl"
+                    />
+                    <Icon v-else name="heroicons:user-20-solid" class="w-6 h-6" />
                   </NuxtLink>
                </div>
 

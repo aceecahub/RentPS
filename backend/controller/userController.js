@@ -124,3 +124,42 @@ export const updateUserProfile = async (req, res) => {
     });
   }
 }
+
+export const updateAvatar = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'Tidak ada file yang diunggah'
+      });
+    }
+
+    const avatarUrl = `/img/avatars/${req.file.filename}`;
+
+    // Update profil
+    const updatedProfile = await prisma.userProfile.upsert({
+      where: { userId: parseInt(userId) },
+      update: {
+        avatarUrl
+      },
+      create: {
+        userId: parseInt(userId),
+        avatarUrl
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Avatar berhasil diperbarui',
+      data: updatedProfile
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+}
+

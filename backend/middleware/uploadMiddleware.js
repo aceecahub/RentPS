@@ -7,20 +7,34 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Arahkan ke frontend/public/img/mitra
-const uploadDir = path.join(__dirname, '../../frontend/public/img/mitra');
+const uploadDirMitra = path.join(__dirname, '../../frontend/public/img/mitra');
+const uploadDirAvatar = path.join(__dirname, '../../frontend/public/img/avatars');
 
-// Ensure directory exists
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// Ensure directories exist
+if (!fs.existsSync(uploadDirMitra)) {
+  fs.mkdirSync(uploadDirMitra, { recursive: true });
+}
+if (!fs.existsSync(uploadDirAvatar)) {
+  fs.mkdirSync(uploadDirAvatar, { recursive: true });
 }
 
-const storage = multer.diskStorage({
+const mitraStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, uploadDir);
+    cb(null, uploadDirMitra);
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     cb(null, 'mitra-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const avatarStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDirAvatar);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'avatar-' + uniqueSuffix + path.extname(file.originalname));
   }
 });
 
@@ -33,9 +47,18 @@ const fileFilter = (req, file, cb) => {
 };
 
 export const uploadMitraPhoto = multer({ 
-  storage: storage,
+  storage: mitraStorage,
   fileFilter: fileFilter,
   limits: {
     fileSize: 5 * 1024 * 1024 // 5MB limit
   }
 });
+
+export const uploadAvatar = multer({ 
+  storage: avatarStorage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 2 * 1024 * 1024 // 2MB limit for avatars
+  }
+});
+
