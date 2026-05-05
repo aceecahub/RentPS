@@ -268,9 +268,11 @@ export const getDashboardStats = async (req, res) => {
         totalBookings: mitra.bookings.length,
         totalRevenue,
         activeUnits: `${activeUnits}/${mitra.units.length}`,
-        approvalStatus: mitra.approvalStatus
+        approvalStatus: mitra.approvalStatus,
+        rejectionReason: mitra.rejectionReason
       }
     })
+
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message })
   }

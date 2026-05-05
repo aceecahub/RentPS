@@ -6,7 +6,7 @@ export const registerService = async (data) => {
     const { email, password, name, role } = data;
 
     const existingUser = await prisma.user.findUnique({
-        where: { email}
+        where: {email}
     })
 
     if (existingUser) {

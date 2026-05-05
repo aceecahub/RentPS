@@ -1,18 +1,41 @@
 <script setup>
 const route = useRoute()
 const isAuthPage = computed(() => route.path.startsWith('/auth'))
+const isAdminPage = computed(() => route.path.startsWith('/admin'))
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col">
-    <TheNavbar v-if="!isAuthPage" />
-    <main class="flex-grow">
-      <NuxtPage />
-    </main>
-    <footer class="bg-gray-50 border-t border-gray-100 py-12 mt-20" v-if="!isAuthPage">
-      <div class="max-w-7xl mx-auto px-4 text-center">
-        <p class="text-gray-500 text-sm">&copy; 2026 RentPS. All rights reserved.</p>
+  <div class="min-h-screen flex selection:bg-primary-500 selection:text-navy">
+    <!-- Admin Layout -->
+    <template v-if="isAdminPage && !isAuthPage">
+      <TheAdminSidebar />
+      <main class="flex-grow overflow-y-auto h-screen bg-gray-50/30">
+        <NuxtPage />
+      </main>
+    </template>
+
+    <!-- Normal Layout -->
+    <template v-else>
+      <div class="flex flex-col w-full">
+        <TheNavbar v-if="!isAuthPage" />
+        <main class="flex-grow overflow-x-hidden">
+          <NuxtPage />
+        </main>
+        <TheFooter v-if="!isAuthPage" />
       </div>
-    </footer>
+    </template>
   </div>
 </template>
+
+<style>
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateY(20px);
+}
+</style>

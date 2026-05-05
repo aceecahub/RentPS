@@ -1,5 +1,47 @@
 import prisma from '../prisma/client.js'
 
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      where: { role: 'CUSTOMER' },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
+        userProfile: {
+          select: {
+            phone: true,
+            address: true,
+            avatarUrl: true,
+            nik: true
+          }
+        },
+        bookings: {
+          select: { id: true, status: true, totalPrice: true },
+          orderBy: { createdAt: 'desc' },
+          take: 5
+        },
+        _count: {
+          select: { bookings: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+
+    return res.status(200).json({
+      success: true,
+      data: users
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    })
+  }
+}
+
 export const getUserProfile = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -82,3 +124,42 @@ export const updateUserProfile = async (req, res) => {
     });
   }
 }
+
+export const updateAvatar = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'Tidak ada file yang diunggah'
+      });
+    }
+
+    const avatarUrl = `/img/avatars/${req.file.filename}`;
+
+    // Update profil
+    const updatedProfile = await prisma.userProfile.upsert({
+      where: { userId: parseInt(userId) },
+      update: {
+        avatarUrl
+      },
+      create: {
+        userId: parseInt(userId),
+        avatarUrl
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Avatar berhasil diperbarui',
+      data: updatedProfile
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+}
+

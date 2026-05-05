@@ -195,325 +195,397 @@ const updateProfile = async () => {
     alert('Gagal memperbarui profil toko')
   }
 }
+
+const tabs = [
+  { id: 'units', label: 'Unit PlayStation', icon: 'heroicons:computer-desktop-20-solid' },
+  { id: 'snacks', label: 'Stok Snack', icon: 'heroicons:shopping-bag-20-solid' },
+  { id: 'hours', label: 'Jam Kerja', icon: 'heroicons:clock-20-solid' },
+  { id: 'photos', label: 'Galeri Foto', icon: 'heroicons:photo-20-solid' },
+  { id: 'profile', label: 'Profil Toko', icon: 'heroicons:store-front-20-solid' },
+]
 </script>
 
 <template>
-  <div class="p-8 space-y-8 max-w-5xl mx-auto">
-    <div class="flex items-center space-x-4 mb-6">
-      <NuxtLink to="/mitra/dashboard" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-navy hover:text-white transition-colors">
-        <Icon name="heroicons:arrow-left" class="w-5 h-5" />
-      </NuxtLink>
-      <div>
-        <h1 class="text-3xl font-black text-navy">Manajemen Toko</h1>
-        <p class="text-gray-500">Kelola ketersediaan Unit PlayStation dan inventaris Snack Anda.</p>
+  <div class="p-4 md:p-10 space-y-12 bg-gray-50/30 min-h-screen">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div class="flex items-center space-x-6">
+        <NuxtLink to="/mitra/dashboard" class="w-14 h-14 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-navy shadow-sm hover:shadow-lg transition-all hover:-translate-x-1 group">
+          <Icon name="heroicons:arrow-left-20-solid" class="w-6 h-6 group-hover:text-primary-500 transition-colors" />
+        </NuxtLink>
+        <div>
+          <h1 class="text-4xl font-black text-navy tracking-tight">Manajemen Toko</h1>
+          <p class="text-gray-500 font-medium mt-1">Konfigurasi operasional dan inventaris rental Anda.</p>
+        </div>
+      </div>
+      
+      <div v-if="mitraData" class="flex items-center bg-white px-6 py-4 rounded-3xl border border-gray-100 shadow-sm">
+        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-3"></div>
+        <span class="text-xs font-black uppercase tracking-widest text-navy">{{ mitraData.shopName }}</span>
       </div>
     </div>
 
-    <div v-if="loadingInit || !mitraId" class="animate-pulse flex space-x-4">
-      <div class="h-10 w-32 bg-gray-200 rounded-xl"></div>
-      <div class="h-10 w-32 bg-gray-200 rounded-xl"></div>
+    <div v-if="loadingInit || !mitraId" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div v-for="i in 5" :key="i" class="h-16 bg-gray-100 rounded-2xl animate-pulse"></div>
     </div>
 
     <template v-else>
-      <!-- Tabs -->
-      <div class="flex space-x-2 border-b border-gray-100 pb-px overflow-x-auto">
+      <!-- Navigation Tabs -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 bg-white p-2 rounded-[32px] border border-gray-100 shadow-xl shadow-navy/5">
         <button 
-          @click="activeTab = 'units'"
-          class="px-6 py-3 font-bold text-sm border-b-2 transition-colors whitespace-nowrap"
-          :class="activeTab === 'units' ? 'border-navy text-navy' : 'border-transparent text-gray-400 hover:text-gray-600'"
+          v-for="tab in tabs"
+          :key="tab.id"
+          @click="activeTab = tab.id"
+          class="flex flex-col items-center justify-center p-4 rounded-[24px] transition-all duration-500 group"
+          :class="activeTab === tab.id ? 'bg-navy text-white shadow-xl shadow-navy/20' : 'text-gray-400 hover:bg-gray-50 hover:text-navy'"
         >
-          Unit PlayStation
-        </button>
-        <button 
-          @click="activeTab = 'snacks'"
-          class="px-6 py-3 font-bold text-sm border-b-2 transition-colors whitespace-nowrap"
-          :class="activeTab === 'snacks' ? 'border-navy text-navy' : 'border-transparent text-gray-400 hover:text-gray-600'"
-        >
-          Inventaris Snack
-        </button>
-        <button 
-          @click="activeTab = 'hours'"
-          class="px-6 py-3 font-bold text-sm border-b-2 transition-colors whitespace-nowrap"
-          :class="activeTab === 'hours' ? 'border-navy text-navy' : 'border-transparent text-gray-400 hover:text-gray-600'"
-        >
-          Jam Operasional
-        </button>
-        <button 
-          @click="activeTab = 'photos'"
-          class="px-6 py-3 font-bold text-sm border-b-2 transition-colors whitespace-nowrap"
-          :class="activeTab === 'photos' ? 'border-navy text-navy' : 'border-transparent text-gray-400 hover:text-gray-600'"
-        >
-          Foto Toko
-        </button>
-        <button 
-          @click="activeTab = 'profile'"
-          class="px-6 py-3 font-bold text-sm border-b-2 transition-colors whitespace-nowrap"
-          :class="activeTab === 'profile' ? 'border-navy text-navy' : 'border-transparent text-gray-400 hover:text-gray-600'"
-        >
-          Profil Toko
+          <Icon :name="tab.icon" class="w-6 h-6 mb-2 group-hover:scale-110 transition-transform" />
+          <span class="text-[10px] font-black uppercase tracking-widest">{{ tab.label }}</span>
         </button>
       </div>
 
-      <!-- UNIT TAB -->
-      <div v-if="activeTab === 'units'" class="space-y-6">
-        <div class="flex justify-between items-center">
-          <h2 class="text-xl font-bold text-navy">Daftar Unit PS</h2>
-          <button @click="isAddingUnit = !isAddingUnit" class="btn-primary py-2 px-4 text-sm flex items-center">
-            <Icon :name="isAddingUnit ? 'heroicons:x-mark' : 'heroicons:plus'" class="w-4 h-4 mr-2" />
-            {{ isAddingUnit ? 'Batal' : 'Tambah Unit' }}
-          </button>
-        </div>
-
-        <!-- Add Form -->
-        <form v-if="isAddingUnit" @submit.prevent="addUnit" class="bg-gray-50 p-6 rounded-2xl border border-gray-200 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-          <div class="space-y-2">
-            <label class="text-xs font-bold text-gray-500">Nama Unit (Misal: Seat 01)</label>
-            <input v-model="unitForm.name" type="text" class="input-field" required>
-          </div>
-          <div class="space-y-2">
-            <label class="text-xs font-bold text-gray-500">Tipe</label>
-            <select v-model="unitForm.type" class="input-field" required>
-              <option value="PS3">PS 3</option>
-              <option value="PS4">PS 4</option>
-              <option value="PS5">PS 5</option>
-            </select>
-          </div>
-          <div class="space-y-2">
-            <label class="text-xs font-bold text-gray-500">Harga / Jam</label>
-            <input v-model="unitForm.pricePerHour" type="number" class="input-field" required>
-          </div>
-          <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold h-12 rounded-xl transition-colors">
-            Simpan Unit
-          </button>
-        </form>
-
-        <!-- List -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div v-for="unit in mitraData.units" :key="unit.id" class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-            <div class="flex justify-between items-start mb-4">
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center">
-                  <Icon :name="unit.type === 'PS5' ? 'heroicons:cpu-chip' : 'heroicons:computer-desktop'" class="w-6 h-6 text-primary-600" />
-                </div>
-                <div>
-                  <h3 class="font-bold text-navy">{{ unit.name }}</h3>
-                  <p class="text-xs font-bold text-gray-400">{{ unit.type }}</p>
-                </div>
-              </div>
-              <button @click="deleteUnit(unit.id)" class="text-red-400 hover:text-red-600">
-                <Icon name="heroicons:trash" class="w-5 h-5" />
-              </button>
-            </div>
-            <div class="flex justify-between items-end border-t border-gray-50 pt-4">
-              <div>
-                <p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Tarif</p>
-                <p class="font-black text-navy">Rp{{ parseFloat(unit.pricePerHour).toLocaleString() }}<span class="font-normal text-xs text-gray-500">/jam</span></p>
-              </div>
-              <button 
-                @click="toggleUnitStatus(unit)"
-                class="px-3 py-1 rounded-lg text-xs font-bold transition-colors"
-                :class="unit.isAvailable ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200'"
-              >
-                {{ unit.isAvailable ? 'Tersedia' : 'Sedang Dipakai' }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SNACK TAB -->
-      <div v-if="activeTab === 'snacks'" class="space-y-6">
-        <div class="flex justify-between items-center">
-          <h2 class="text-xl font-bold text-navy">Inventaris Snack & Minuman</h2>
-          <button @click="isAddingSnack = !isAddingSnack" class="btn-primary py-2 px-4 text-sm flex items-center">
-            <Icon :name="isAddingSnack ? 'heroicons:x-mark' : 'heroicons:plus'" class="w-4 h-4 mr-2" />
-            {{ isAddingSnack ? 'Batal' : 'Tambah Snack' }}
-          </button>
-        </div>
-
-        <!-- Add Form -->
-        <form v-if="isAddingSnack" @submit.prevent="addSnack" class="bg-gray-50 p-6 rounded-2xl border border-gray-200 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-          <div class="space-y-2 md:col-span-2">
-            <label class="text-xs font-bold text-gray-500">Nama Snack/Minuman</label>
-            <input v-model="snackForm.name" type="text" class="input-field" required>
-          </div>
-          <div class="space-y-2">
-            <label class="text-xs font-bold text-gray-500">Harga</label>
-            <input v-model="snackForm.price" type="number" class="input-field" required>
-          </div>
-          <div class="space-y-2">
-            <label class="text-xs font-bold text-gray-500">Stok Awal</label>
-            <div class="flex space-x-2">
-              <input v-model="snackForm.stock" type="number" class="input-field" required>
-              <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold w-12 rounded-xl flex items-center justify-center transition-colors">
-                <Icon name="heroicons:check" class="w-6 h-6" />
-              </button>
-            </div>
-          </div>
-        </form>
-
-        <!-- List -->
-        <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-          <table class="w-full text-left">
-            <thead>
-              <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
-                <th class="px-6 py-4 font-bold">Produk</th>
-                <th class="px-6 py-4 font-bold">Harga Satuan</th>
-                <th class="px-6 py-4 font-bold">Sisa Stok</th>
-                <th class="px-6 py-4 font-bold text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-50">
-              <tr v-for="snack in mitraData.snacks" :key="snack.id" class="hover:bg-gray-50">
-                <td class="px-6 py-4 font-bold text-navy flex items-center">
-                  <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center mr-3">
-                    <Icon name="heroicons:cake" class="text-gray-400 w-4 h-4" />
-                  </div>
-                  {{ snack.name }}
-                </td>
-                <td class="px-6 py-4 text-gray-600">Rp{{ parseFloat(snack.price).toLocaleString() }}</td>
-                <td class="px-6 py-4">
-                  <span class="px-2 py-1 rounded-md text-xs font-bold" :class="snack.stock > 5 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
-                    {{ snack.stock }} Pcs
-                  </span>
-                </td>
-                <td class="px-6 py-4 text-right">
-                  <button @click="deleteSnack(snack.id)" class="text-red-400 hover:text-red-600 p-2">
-                    <Icon name="heroicons:trash" class="w-5 h-5" />
-                  </button>
-                </td>
-              </tr>
-              <tr v-if="!mitraData.snacks?.length">
-                <td colspan="4" class="px-6 py-10 text-center text-gray-400">Belum ada inventaris snack</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <!-- HOURS TAB -->
-      <div v-if="activeTab === 'hours'" class="space-y-6">
-        <div>
-          <h2 class="text-xl font-bold text-navy mb-2">Jam Operasional Mingguan</h2>
-          <p class="text-sm text-gray-500 mb-6">Atur jam buka dan tutup toko Anda setiap harinya.</p>
-        </div>
-
-        <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden divide-y divide-gray-50">
-          <div v-for="day in days" :key="day" class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-gray-50 transition-colors">
-            <div class="w-32">
-              <span class="font-bold text-navy">{{ formatDay(day) }}</span>
-            </div>
-            
-            <div class="flex-1 flex items-center space-x-4">
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" v-model="getDayData(day).isOpen" class="sr-only peer">
-                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                <span class="ml-3 text-sm font-medium text-gray-600">{{ getDayData(day).isOpen ? 'Buka' : 'Libur' }}</span>
-              </label>
-            </div>
-
-            <div v-if="getDayData(day).isOpen" class="flex items-center space-x-3">
-              <input type="time" v-model="getDayData(day).openTime" class="input-field py-2 px-3 text-sm w-32" required>
-              <span class="text-gray-400 font-bold">-</span>
-              <input type="time" v-model="getDayData(day).closeTime" class="input-field py-2 px-3 text-sm w-32" required>
-              <button @click="saveOperatingHours(getDayData(day))" class="btn-primary py-2 px-4 text-sm ml-4">
-                Simpan
-              </button>
-            </div>
-            <div v-else class="text-sm text-gray-400 italic md:w-[320px] text-right">
-              <button @click="saveOperatingHours(getDayData(day))" class="btn-primary py-2 px-4 text-sm ml-4">
-                Simpan Libur
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PHOTOS TAB -->
-      <div v-if="activeTab === 'photos'" class="space-y-6">
-        <div class="flex justify-between items-center">
-          <div>
-            <h2 class="text-xl font-bold text-navy">Galeri Foto Toko</h2>
-            <p class="text-sm text-gray-500">Foto yang bagus akan menarik lebih banyak pelanggan.</p>
-          </div>
-          <button @click="isAddingPhoto = !isAddingPhoto" class="btn-primary py-2 px-4 text-sm flex items-center">
-            <Icon :name="isAddingPhoto ? 'heroicons:x-mark' : 'heroicons:plus'" class="w-4 h-4 mr-2" />
-            {{ isAddingPhoto ? 'Batal' : 'Tambah Foto' }}
-          </button>
-        </div>
-
-        <!-- Add Photo Form -->
-        <form v-if="isAddingPhoto" @submit.prevent="addPhoto" enctype="multipart/form-data" class="bg-gray-50 p-6 rounded-2xl border border-gray-200 grid grid-cols-1 gap-4">
-          <div class="space-y-2">
-            <label class="text-xs font-bold text-gray-500">Pilih File Foto</label>
-            <input type="file" @change="handleFileChange" accept="image/*" class="input-field p-2" required>
-          </div>
-          <div class="space-y-2">
-            <label class="text-xs font-bold text-gray-500">Keterangan / Caption</label>
-            <input v-model="photoForm.caption" type="text" class="input-field" placeholder="Misal: Area Tunggu Nyaman">
-          </div>
-          <label class="flex items-center space-x-2 cursor-pointer mt-2">
-            <input type="checkbox" v-model="photoForm.isMain" class="rounded border-gray-300 text-navy focus:ring-navy">
-            <span class="text-sm text-gray-600 font-medium">Jadikan Foto Utama (Cover)</span>
-          </label>
-          <div class="flex justify-end">
-            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-xl transition-colors">
-              Unggah Foto
+      <!-- Content Area -->
+      <div class="mt-12 transition-all duration-500">
+        <!-- UNIT TAB -->
+        <div v-if="activeTab === 'units'" class="space-y-10 animate-fade-in">
+          <div class="flex justify-between items-center">
+            <h2 class="text-3xl font-black text-navy tracking-tight">Katalog Unit PlayStation</h2>
+            <button @click="isAddingUnit = !isAddingUnit" class="bg-navy text-white px-8 py-4 rounded-2xl font-black text-sm flex items-center shadow-lg shadow-navy/10 hover:bg-primary-500 hover:text-navy transition-all active:scale-95">
+              <Icon :name="isAddingUnit ? 'heroicons:x-mark' : 'heroicons:plus-20-solid'" class="w-5 h-5 mr-2" />
+              {{ isAddingUnit ? 'Batal Tambah' : 'Tambah Unit Baru' }}
             </button>
           </div>
-        </form>
 
-        <!-- Gallery -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          <div v-for="photo in mitraData.photos" :key="photo.id" class="relative group rounded-3xl overflow-hidden shadow-sm border border-gray-100 aspect-square">
-            <img :src="photo.photoUrl" :alt="photo.caption" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
-              <p class="text-white font-bold text-sm">{{ photo.caption || 'Tanpa Keterangan' }}</p>
-              <div class="flex justify-between items-center mt-2">
-                <span v-if="photo.isMain" class="text-[10px] font-black uppercase tracking-wider bg-primary-500 text-white px-2 py-1 rounded-md">Cover</span>
-                <span v-else></span>
-                <button @click="deletePhoto(photo.id)" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg">
-                  <Icon name="heroicons:trash" class="w-4 h-4" />
+          <Transition name="slide-down">
+            <form v-if="isAddingUnit" @submit.prevent="addUnit" class="bg-white p-10 rounded-[40px] border border-primary-100 shadow-2xl shadow-primary-900/5 grid grid-cols-1 md:grid-cols-4 gap-8 items-end">
+              <div class="space-y-3">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Nama Unit (ID)</label>
+                <input v-model="unitForm.name" type="text" placeholder="Contoh: Seat PS5-01" class="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-6 py-4 text-navy font-black focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner" required>
+              </div>
+              <div class="space-y-3">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Jenis Console</label>
+                <select v-model="unitForm.type" class="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-6 py-4 text-navy font-black focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner appearance-none" required>
+                  <option value="PS3">PlayStation 2</option>
+                  <option value="PS3">PlayStation 3</option>
+                  <option value="PS4">PlayStation 4</option>
+                  <option value="PS5">PlayStation 5</option>
+                </select>
+              </div>
+              <div class="space-y-3">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Tarif (Rp / Jam)</label>
+                <input v-model="unitForm.pricePerHour" type="number" placeholder="Contoh: 15000" class="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-6 py-4 text-navy font-black focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner" required>
+              </div>
+              <button type="submit" class="bg-primary-500 text-navy font-black h-16 rounded-2xl shadow-xl shadow-primary-500/20 hover:bg-primary-400 transition-all flex items-center justify-center">
+                <Icon name="heroicons:check-badge-20-solid" class="w-6 h-6 mr-2" />
+                Simpan Unit
+              </button>
+            </form>
+          </Transition>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div v-for="unit in mitraData.units" :key="unit.id" class="group bg-white p-8 rounded-[40px] border border-gray-100 shadow-xl shadow-navy/5 hover:border-primary-200 hover:shadow-primary-900/10 transition-all duration-500 overflow-hidden relative">
+              <div class="absolute -right-10 -top-10 w-32 h-32 bg-gray-50 rounded-full group-hover:scale-150 transition-transform duration-700"></div>
+              
+              <div class="flex justify-between items-start mb-10 relative z-10">
+                <div class="flex items-center space-x-4">
+                  <div class="w-14 h-14 bg-navy rounded-2xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform">
+                    <Icon :name="unit.type === 'PS5' ? 'heroicons:cpu-chip-20-solid' : 'heroicons:computer-desktop-20-solid'" class="w-7 h-7 text-primary-400" />
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-black text-navy leading-none">{{ unit.name }}</h3>
+                    <p class="text-primary-500 font-black uppercase text-[9px] tracking-[0.2em] mt-2">{{ unit.type }} Console</p>
+                  </div>
+                </div>
+                <button @click="deleteUnit(unit.id)" class="w-10 h-10 bg-red-50 text-red-400 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm">
+                  <Icon name="heroicons:trash-20-solid" class="w-5 h-5" />
+                </button>
+              </div>
+
+              <div class="flex justify-between items-end border-t border-gray-50 pt-8 relative z-10">
+                <div>
+                  <p class="text-[10px] uppercase font-black tracking-widest text-gray-300 mb-1">Harga Sewa</p>
+                  <p class="text-2xl font-black text-navy tracking-tight">Rp{{ parseFloat(unit.pricePerHour).toLocaleString() }}<span class="text-xs font-medium text-gray-400 ml-1">/h</span></p>
+                </div>
+                <button 
+                  @click="toggleUnitStatus(unit)"
+                  class="px-6 py-2.5 rounded-xl text-[10px] font-black tracking-[0.15em] uppercase transition-all shadow-sm border"
+                  :class="unit.isAvailable ? 'bg-green-50 text-green-700 border-green-100 hover:bg-green-100' : 'bg-red-50 text-red-700 border-red-100 hover:bg-red-100'"
+                >
+                  {{ unit.isAvailable ? 'Available' : 'Busy / Used' }}
                 </button>
               </div>
             </div>
           </div>
-          
-          <div v-if="!mitraData.photos?.length && !isAddingPhoto" class="col-span-full py-20 text-center bg-gray-50 rounded-3xl border border-dashed border-gray-300">
-            <Icon name="heroicons:photo" class="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p class="text-gray-500 font-medium">Belum ada foto yang diunggah.</p>
-          </div>
-        </div>
-      </div>
-      <!-- PROFILE TAB -->
-      <div v-if="activeTab === 'profile'" class="space-y-6">
-        <div>
-          <h2 class="text-xl font-bold text-navy mb-2">Informasi Toko</h2>
-          <p class="text-sm text-gray-500 mb-6">Ubah detail profil toko Anda yang akan dilihat oleh pelanggan.</p>
         </div>
 
-        <form @submit.prevent="updateProfile" class="bg-white rounded-3xl border border-gray-100 shadow-sm p-8 space-y-6">
-          <div class="space-y-2">
-            <label class="text-sm font-bold text-gray-500 uppercase tracking-wider">Nama Toko (Rental)</label>
-            <input v-model="profileForm.shopName" type="text" class="input-field py-3 text-lg font-bold text-navy" required>
-          </div>
-          
-          <div class="space-y-2">
-            <label class="text-sm font-bold text-gray-500 uppercase tracking-wider">Alamat Lengkap</label>
-            <textarea v-model="profileForm.address" class="input-field py-3 min-h-[100px]" required></textarea>
-          </div>
-
-          <div class="space-y-2">
-            <label class="text-sm font-bold text-gray-500 uppercase tracking-wider">Deskripsi Singkat</label>
-            <textarea v-model="profileForm.description" class="input-field py-3 min-h-[150px]" placeholder="Ceritakan keunggulan rental PS Anda (opsional)"></textarea>
-          </div>
-
-          <div class="flex justify-end pt-4 border-t border-gray-100">
-            <button type="submit" class="btn-primary py-3 px-8 text-lg">
-              Simpan Perubahan
+        <!-- SNACK TAB -->
+        <div v-if="activeTab === 'snacks'" class="space-y-10 animate-fade-in">
+          <div class="flex justify-between items-center">
+            <h2 class="text-3xl font-black text-navy tracking-tight">Inventaris Snack</h2>
+            <button @click="isAddingSnack = !isAddingSnack" class="bg-navy text-white px-8 py-4 rounded-2xl font-black text-sm flex items-center shadow-lg shadow-navy/10 hover:bg-primary-500 hover:text-navy transition-all active:scale-95">
+              <Icon :name="isAddingSnack ? 'heroicons:x-mark' : 'heroicons:plus-20-solid'" class="w-5 h-5 mr-2" />
+              {{ isAddingSnack ? 'Batal' : 'Tambah Snack' }}
             </button>
           </div>
-        </form>
+
+          <Transition name="slide-down">
+            <form v-if="isAddingSnack" @submit.prevent="addSnack" class="bg-white p-10 rounded-[40px] border border-primary-100 shadow-2xl shadow-primary-900/5 grid grid-cols-1 md:grid-cols-4 gap-8 items-end">
+              <div class="space-y-3 md:col-span-2">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Nama Produk</label>
+                <input v-model="snackForm.name" type="text" placeholder="Contoh: Coca Cola 330ml" class="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-6 py-4 text-navy font-black focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner" required>
+              </div>
+              <div class="space-y-3">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Harga Satuan</label>
+                <input v-model="snackForm.price" type="number" placeholder="5000" class="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-6 py-4 text-navy font-black focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner" required>
+              </div>
+              <div class="space-y-3">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Stok Awal</label>
+                <div class="flex space-x-3">
+                  <input v-model="snackForm.stock" type="number" placeholder="24" class="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-6 py-4 text-navy font-black focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner" required>
+                  <button type="submit" class="bg-primary-500 text-navy font-black w-16 h-16 shrink-0 rounded-2xl shadow-xl shadow-primary-500/20 hover:bg-primary-400 transition-all flex items-center justify-center">
+                    <Icon name="heroicons:check-20-solid" class="w-8 h-8" />
+                  </button>
+                </div>
+              </div>
+            </form>
+          </Transition>
+
+          <div class="bg-white rounded-[40px] border border-gray-100 shadow-xl shadow-navy/5 overflow-hidden">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-gray-50/50 text-gray-400 text-[10px] uppercase tracking-[0.2em]">
+                  <th class="px-10 py-6 font-black">Detail Produk</th>
+                  <th class="px-10 py-6 font-black">Harga Jual</th>
+                  <th class="px-10 py-6 font-black">Inventaris</th>
+                  <th class="px-10 py-6 font-black text-right">Opsi</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-50">
+                <tr v-for="snack in mitraData.snacks" :key="snack.id" class="group hover:bg-primary-50/30 transition-all">
+                  <td class="px-10 py-6">
+                    <div class="flex items-center space-x-4">
+                      <div class="w-12 h-12 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-transform">
+                        <Icon name="heroicons:cake-20-solid" class="text-primary-500 w-6 h-6" />
+                      </div>
+                      <span class="font-black text-navy text-lg tracking-tight">{{ snack.name }}</span>
+                    </div>
+                  </td>
+                  <td class="px-10 py-6">
+                    <span class="font-bold text-gray-600">Rp{{ parseFloat(snack.price).toLocaleString() }}</span>
+                  </td>
+                  <td class="px-10 py-6">
+                    <div class="flex items-center space-x-3">
+                      <div class="flex-grow w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div 
+                          class="h-full rounded-full transition-all duration-1000" 
+                          :class="snack.stock > 10 ? 'bg-green-500' : 'bg-red-500'"
+                          :style="{ width: Math.min(100, (snack.stock / 50) * 100) + '%' }"
+                        ></div>
+                      </div>
+                      <span class="text-xs font-black uppercase tracking-widest" :class="snack.stock > 10 ? 'text-green-600' : 'text-red-600'">
+                        {{ snack.stock }} Pcs
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-10 py-6 text-right">
+                    <button @click="deleteSnack(snack.id)" class="w-10 h-10 bg-white text-red-400 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm border border-gray-100">
+                      <Icon name="heroicons:trash-20-solid" class="w-5 h-5" />
+                    </button>
+                  </td>
+                </tr>
+                <tr v-if="!mitraData.snacks?.length">
+                  <td colspan="4" class="px-10 py-20 text-center">
+                    <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Icon name="heroicons:shopping-bag" class="w-10 h-10 text-gray-200" />
+                    </div>
+                    <p class="text-gray-400 font-bold uppercase tracking-widest text-xs">Belum ada inventaris snack terdaftar</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- HOURS TAB -->
+        <div v-if="activeTab === 'hours'" class="space-y-10 animate-fade-in">
+          <div class="flex items-center space-x-4 mb-2">
+            <div class="w-1.5 h-8 bg-primary-500 rounded-full"></div>
+            <h2 class="text-3xl font-black text-navy tracking-tight">Jam Operasional Toko</h2>
+          </div>
+
+          <div class="bg-white rounded-[40px] border border-gray-100 shadow-xl shadow-navy/5 overflow-hidden divide-y divide-gray-50">
+            <div v-for="day in days" :key="day" class="p-8 flex flex-col md:flex-row md:items-center justify-between gap-8 hover:bg-gray-50 transition-colors group">
+              <div class="w-40">
+                <span class="text-xl font-black text-navy tracking-tight group-hover:text-primary-600 transition-colors">{{ formatDay(day) }}</span>
+              </div>
+              
+              <div class="flex-1 flex items-center space-x-4">
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" v-model="getDayData(day).isOpen" class="sr-only peer">
+                  <div class="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary-500"></div>
+                  <span class="ml-4 text-sm font-black uppercase tracking-widest text-navy">{{ getDayData(day).isOpen ? 'Buka' : 'Libur' }}</span>
+                </label>
+              </div>
+
+              <div v-if="getDayData(day).isOpen" class="flex flex-wrap items-center gap-4">
+                <div class="flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100 shadow-inner">
+                  <Icon name="heroicons:sun-20-solid" class="w-4 h-4 text-orange-400" />
+                  <input type="time" v-model="getDayData(day).openTime" class="bg-transparent text-sm font-black text-navy focus:outline-none w-20">
+                </div>
+                <Icon name="heroicons:arrow-right-20-solid" class="w-4 h-4 text-gray-300" />
+                <div class="flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100 shadow-inner">
+                  <Icon name="heroicons:moon-20-solid" class="w-4 h-4 text-blue-400" />
+                  <input type="time" v-model="getDayData(day).closeTime" class="bg-transparent text-sm font-black text-navy focus:outline-none w-20">
+                </div>
+                <button @click="saveOperatingHours(getDayData(day))" class="ml-4 bg-navy text-white px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-primary-500 hover:text-navy transition-all shadow-lg shadow-navy/10 active:scale-95">
+                  Update Jam
+                </button>
+              </div>
+              <div v-else class="text-sm text-gray-400 italic md:w-[320px] text-right">
+                <button @click="saveOperatingHours(getDayData(day))" class="bg-gray-100 text-gray-400 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-navy hover:text-white transition-all shadow-sm active:scale-95">
+                  Set Sebagai Libur
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PHOTOS TAB -->
+        <div v-if="activeTab === 'photos'" class="space-y-10 animate-fade-in">
+          <div class="flex justify-between items-center">
+            <div>
+              <h2 class="text-3xl font-black text-navy tracking-tight">Galeri Visual Toko</h2>
+              <p class="text-gray-500 font-medium mt-1">Gunakan foto dengan resolusi tinggi (HD) untuk hasil maksimal.</p>
+            </div>
+            <button @click="isAddingPhoto = !isAddingPhoto" class="bg-navy text-white px-8 py-4 rounded-2xl font-black text-sm flex items-center shadow-lg shadow-navy/10 hover:bg-primary-500 hover:text-navy transition-all active:scale-95">
+              <Icon :name="isAddingPhoto ? 'heroicons:x-mark' : 'heroicons:photo-20-solid'" class="w-5 h-5 mr-2" />
+              {{ isAddingPhoto ? 'Batal Unggah' : 'Upload Foto Baru' }}
+            </button>
+          </div>
+
+          <Transition name="slide-down">
+            <form v-if="isAddingPhoto" @submit.prevent="addPhoto" enctype="multipart/form-data" class="bg-white p-10 rounded-[40px] border border-primary-100 shadow-2xl shadow-primary-900/5 space-y-8">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-3">
+                  <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Pilih File Image</label>
+                  <div class="relative group cursor-pointer border-2 border-dashed border-gray-100 rounded-[32px] p-8 hover:border-primary-400 hover:bg-primary-50/10 transition-all text-center">
+                    <input type="file" @change="handleFileChange" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required>
+                    <Icon name="heroicons:cloud-arrow-up-20-solid" class="w-12 h-12 text-primary-500 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                    <p class="text-sm font-bold text-navy">{{ photoForm.file ? photoForm.file.name : 'Drag & drop atau klik untuk cari' }}</p>
+                    <p class="text-[10px] text-gray-400 mt-2 uppercase tracking-widest">PNG, JPG up to 5MB</p>
+                  </div>
+                </div>
+                <div class="space-y-8 flex flex-col justify-center">
+                  <div class="space-y-3">
+                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Caption Foto</label>
+                    <input v-model="photoForm.caption" type="text" placeholder="Contoh: Area Console PS5" class="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-6 py-4 text-navy font-black focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner">
+                  </div>
+                  <label class="flex items-center space-x-4 cursor-pointer p-4 bg-gray-50 rounded-2xl hover:bg-white border border-transparent hover:border-gray-100 transition-all">
+                    <input type="checkbox" v-model="photoForm.isMain" class="w-5 h-5 rounded-lg border-gray-300 text-navy focus:ring-primary-500">
+                    <span class="text-sm text-navy font-black uppercase tracking-widest">Gunakan Sebagai Foto Utama (Cover)</span>
+                  </label>
+                </div>
+              </div>
+              <div class="flex justify-end pt-6 border-t border-gray-50">
+                <button type="submit" class="bg-primary-500 text-navy px-10 py-4 rounded-2xl font-black text-sm shadow-xl shadow-primary-500/20 hover:bg-primary-400 transition-all active:scale-95">
+                  Mulai Unggah Foto
+                </button>
+              </div>
+            </form>
+          </Transition>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            <div v-for="photo in mitraData.photos" :key="photo.id" class="group relative rounded-[40px] overflow-hidden shadow-xl shadow-navy/5 border border-gray-100 aspect-square">
+              <img :src="photo.photoUrl" :alt="photo.caption" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000">
+              <div class="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-8">
+                <p class="text-white font-black text-xl tracking-tight translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{{ photo.caption || 'Fasilitas Mitra' }}</p>
+                <div class="flex justify-between items-center mt-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-700 delay-100">
+                  <span v-if="photo.isMain" class="text-[9px] font-black uppercase tracking-[0.2em] bg-primary-500 text-navy px-4 py-1.5 rounded-full shadow-lg shadow-primary-500/30">Main Cover</span>
+                  <div v-else></div>
+                  <button @click="deletePhoto(photo.id)" class="bg-red-500 hover:bg-red-600 text-white p-3 rounded-2xl shadow-lg transition-all active:scale-95">
+                    <Icon name="heroicons:trash-20-solid" class="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div v-if="!mitraData.photos?.length && !isAddingPhoto" class="col-span-full py-32 text-center bg-white rounded-[48px] border-2 border-dashed border-gray-100 shadow-xl shadow-navy/5">
+              <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8">
+                <Icon name="heroicons:photo" class="w-12 h-12 text-gray-200" />
+              </div>
+              <p class="text-gray-400 font-black uppercase tracking-widest text-xs">Belum ada koleksi foto toko.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROFILE TAB -->
+        <div v-if="activeTab === 'profile'" class="space-y-10 animate-fade-in">
+          <div class="flex items-center space-x-4 mb-2">
+            <div class="w-1.5 h-8 bg-primary-500 rounded-full"></div>
+            <h2 class="text-3xl font-black text-navy tracking-tight">Detail Profil Rental</h2>
+          </div>
+
+          <form @submit.prevent="updateProfile" class="bg-white rounded-[48px] border border-gray-100 shadow-2xl shadow-navy/5 p-10 md:p-14 space-y-10 relative overflow-hidden group">
+            <div class="absolute -right-24 -top-24 w-64 h-64 bg-primary-50 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 relative z-10">
+              <div class="space-y-3 md:col-span-2">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Nama Brand / Shop Name</label>
+                <div class="relative">
+                  <Icon name="heroicons:store-front-20-solid" class="absolute left-6 top-1/2 -translate-y-1/2 text-primary-500 w-6 h-6" />
+                  <input v-model="profileForm.shopName" type="text" class="w-full bg-gray-50 border-2 border-gray-50 rounded-3xl pl-16 pr-8 py-6 text-2xl font-black text-navy focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner" required>
+                </div>
+              </div>
+              
+              <div class="space-y-3">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Alamat Fisik Rental</label>
+                <div class="relative">
+                  <Icon name="heroicons:map-pin-20-solid" class="absolute left-6 top-8 text-gray-300 w-6 h-6" />
+                  <textarea v-model="profileForm.address" class="w-full bg-gray-50 border-2 border-gray-50 rounded-3xl pl-16 pr-8 py-6 min-h-[150px] text-navy font-bold focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner" required></textarea>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Deskripsi & Keunggulan</label>
+                <div class="relative">
+                  <Icon name="heroicons:document-text-20-solid" class="absolute left-6 top-8 text-gray-300 w-6 h-6" />
+                  <textarea v-model="profileForm.description" class="w-full bg-gray-50 border-2 border-gray-50 rounded-3xl pl-16 pr-8 py-6 min-h-[150px] text-navy font-bold focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner" placeholder="Tuliskan fasilitas spesial di rental Anda..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-end pt-10 border-t border-gray-50 relative z-10">
+              <button type="submit" class="bg-navy text-white px-12 py-5 rounded-2xl font-black text-lg shadow-xl shadow-navy/20 hover:bg-primary-500 hover:text-navy transition-all active:scale-95 flex items-center">
+                <Icon name="heroicons:check-circle-20-solid" class="w-6 h-6 mr-3" />
+                Simpan Perubahan Profil
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </template>
   </div>
 </template>
+
+<style scoped>
+.animate-fade-in {
+  animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-down-enter-active, .slide-down-leave-active {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.slide-down-enter-from, .slide-down-leave-to {
+  opacity: 0;
+  max-height: 0;
+  transform: translateY(-20px);
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+}
+</style>
