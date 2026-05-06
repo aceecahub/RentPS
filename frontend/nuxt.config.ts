@@ -12,6 +12,12 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      script: [
+        {
+          src: 'https://app.sandbox.midtrans.com/snap/snap.js',
+          'data-client-key': 'Mid-client-nfNqzH8LPbrVtJKl'
+        }
+      ],
       meta: [
         {
           name: "viewport",

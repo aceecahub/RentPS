@@ -104,6 +104,37 @@ const deleteSnack = async (id) => {
   } catch (err) { alert('Gagal menghapus') }
 }
 
+const isEditingSnack = ref(false)
+const currentSnackId = ref(null)
+const editSnackForm = reactive({ name: '', price: '', stock: '' })
+
+const openEditSnack = (snack) => {
+  currentSnackId.value = snack.id
+  editSnackForm.name = snack.name
+  editSnackForm.price = snack.price
+  editSnackForm.stock = snack.stock
+  isEditingSnack.value = true
+  isAddingSnack.value = false
+}
+
+const updateSnack = async () => {
+  try {
+    await $fetch(`${config.public.apiBase}/snack/${currentSnackId.value}`, {
+      method: 'PUT',
+      body: { 
+        name: editSnackForm.name, 
+        price: parseFloat(editSnackForm.price),
+        stock: parseInt(editSnackForm.stock)
+      }
+    })
+    alert('Snack berhasil diperbarui!')
+    isEditingSnack.value = false
+    refreshProfile()
+  } catch (err) {
+    alert('Gagal memperbarui snack')
+  }
+}
+
 // === OPERATING HOURS ===
 const days = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']
 const formatDay = (day) => {
@@ -350,6 +381,31 @@ const tabs = [
             </form>
           </Transition>
 
+          <Transition name="slide-down">
+            <form v-if="isEditingSnack" @submit.prevent="updateSnack" class="bg-white p-10 rounded-[40px] border border-blue-100 shadow-2xl shadow-blue-900/5 grid grid-cols-1 md:grid-cols-4 gap-8 items-end">
+              <div class="space-y-3 md:col-span-2">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Edit Nama Produk</label>
+                <input v-model="editSnackForm.name" type="text" class="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-6 py-4 text-navy font-black focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner" required>
+              </div>
+              <div class="space-y-3">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Edit Harga</label>
+                <input v-model="editSnackForm.price" type="number" class="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-6 py-4 text-navy font-black focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner" required>
+              </div>
+              <div class="space-y-3">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Update Stok</label>
+                <div class="flex space-x-3">
+                  <input v-model="editSnackForm.stock" type="number" class="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl px-6 py-4 text-navy font-black focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner" required>
+                  <button type="submit" class="bg-blue-500 text-white font-black w-16 h-16 shrink-0 rounded-2xl shadow-xl shadow-blue-500/20 hover:bg-blue-600 transition-all flex items-center justify-center">
+                    <Icon name="heroicons:arrow-path-20-solid" class="w-8 h-8" />
+                  </button>
+                  <button type="button" @click="isEditingSnack = false" class="bg-red-50 text-red-500 font-black w-16 h-16 shrink-0 rounded-2xl hover:bg-red-100 transition-all flex items-center justify-center">
+                    <Icon name="heroicons:x-mark-20-solid" class="w-8 h-8" />
+                  </button>
+                </div>
+              </div>
+            </form>
+          </Transition>
+
           <div class="bg-white rounded-[40px] border border-gray-100 shadow-xl shadow-navy/5 overflow-hidden">
             <table class="w-full text-left border-collapse">
               <thead>
@@ -388,9 +444,14 @@ const tabs = [
                     </div>
                   </td>
                   <td class="px-10 py-6 text-right">
-                    <button @click="deleteSnack(snack.id)" class="w-10 h-10 bg-white text-red-400 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm border border-gray-100">
-                      <Icon name="heroicons:trash-20-solid" class="w-5 h-5" />
-                    </button>
+                    <div class="flex justify-end space-x-2">
+                      <button @click="openEditSnack(snack)" class="w-10 h-10 bg-white text-blue-400 rounded-xl flex items-center justify-center hover:bg-blue-500 hover:text-white transition-all shadow-sm border border-gray-100">
+                        <Icon name="heroicons:pencil-square-20-solid" class="w-5 h-5" />
+                      </button>
+                      <button @click="deleteSnack(snack.id)" class="w-10 h-10 bg-white text-red-400 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm border border-gray-100">
+                        <Icon name="heroicons:trash-20-solid" class="w-5 h-5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
                 <tr v-if="!mitraData.snacks?.length">

@@ -1,12 +1,12 @@
 <script setup>
 const config = useRuntimeConfig()
-const { user, isLoggedIn } = useAuth()
+const { user, token, isLoggedIn } = useAuth()
 
 if (!isLoggedIn.value) {
   navigateTo('/auth/login')
 }
 
-const { data: response, pending } = await useFetch(`${config.public.apiBase}/booking/user`, {
+const { data: response, pending, refresh } = await useFetch(`${config.public.apiBase}/booking/user`, {
   query: { userId: user.value?.id } 
 })
 
@@ -21,6 +21,41 @@ const getStatusClasses = (status) => {
     CANCELLED: 'bg-red-50 text-red-600 border-red-100',
   }
   return map[status] || 'bg-gray-50 text-gray-600 border-gray-100'
+}
+
+const payNow = async (bookingId) => {
+  try {
+    const res = await $fetch(`${config.public.apiBase}/payment/create-transaction`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      },
+      body: { bookingId }
+    })
+
+    if (res.token) {
+      window.snap.pay(res.token, {
+        onSuccess: (result) => {
+          console.log('success', result)
+          refresh()
+        },
+        onPending: (result) => {
+          console.log('pending', result)
+          refresh()
+        },
+        onError: (result) => {
+          console.log('error', result)
+          alert('Pembayaran gagal')
+        },
+        onClose: () => {
+          console.log('customer closed the popup without finishing the payment')
+        }
+      })
+    }
+  } catch (error) {
+    console.error('Payment error:', error)
+    alert('Gagal membuat transaksi')
+  }
 }
 </script>
 
@@ -133,6 +168,7 @@ const getStatusClasses = (status) => {
                   <p class="text-3xl font-black text-navy tracking-tight">Rp{{ parseFloat(booking.totalPrice).toLocaleString() }}</p>
                   <button 
                     v-if="booking.status === 'WAITING_PAYMENT'"
+                    @click="payNow(booking.id)"
                     class="mt-4 w-full md:w-auto bg-navy text-white px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary-500 hover:text-navy transition-all shadow-lg shadow-navy/10 active:scale-95"
                   >
                     Bayar Sekarang

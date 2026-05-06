@@ -1,6 +1,25 @@
 
 import prisma from '../prisma/client.js'
-import { registerMitra, updateApprovalStatus, manualCloseAndOpen, operatingHours } from '../service/mitraService.js';
+import { registerMitra, updateApprovalStatus, manualCloseAndOpen, operatingHours, getIncomeReport } from '../service/mitraService.js';
+
+export const getIncomeReportController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { startDate, endDate, period } = req.query;
+
+    const result = await getIncomeReport(id, { startDate, endDate, period });
+
+    return res.status(200).json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 
 export const register = async (req, res) => {
   try {

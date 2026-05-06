@@ -87,3 +87,66 @@ export const findMitraByUserId = async (userId) => {
         where: { userId: parseInt(userId) }
     })
 }
+
+export const getIncomeReport = async (mitraId, { startDate, endDate, period }) => {
+    let whereClause = {
+        mitraId: parseInt(mitraId),
+        status: 'COMPLETED'
+    };
+
+    const now = new Date();
+    
+    if (period === 'day') {
+        const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(now.setHours(23, 59, 59, 999));
+        whereClause.updatedAt = { gte: startOfDay, lte: endOfDay };
+    } else if (period === 'month') {
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+        whereClause.updatedAt = { gte: startOfMonth, lte: endOfMonth };
+    } else if (period === 'year') {
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+        whereClause.updatedAt = { gte: startOfYear, lte: endOfYear };
+    } else if (startDate && endDate) {
+        whereClause.updatedAt = {
+            gte: new Date(startDate),
+            lte: new Date(endDate)
+        };
+    }
+
+    const bookings = await prisma.booking.findMany({
+        where: whereClause,
+        include: {
+            snacks: true,
+            unit: true
+        }
+    });
+
+    let totalPsIncome = 0;
+    let totalSnackIncome = 0;
+
+    bookings.forEach(booking => {
+        // Calculate snack income for this booking
+        const snackIncome = booking.snacks.reduce((sum, item) => {
+            return sum + (parseFloat(item.priceAtBooking) * item.quantity);
+        }, 0);
+        
+        totalSnackIncome += snackIncome;
+        
+        // Calculate PS income (total price minus snack income, or calculate by duration)
+        // Using Independent calculation to be safe
+        const psIncome = parseFloat(booking.unit.pricePerHour) * booking.durationHour;
+        totalPsIncome += psIncome;
+    });
+
+    return {
+        totalIncome: totalPsIncome + totalSnackIncome,
+        psIncome: totalPsIncome,
+        snackIncome: totalSnackIncome,
+        bookingCount: bookings.length,
+        period: period || 'custom',
+        startDate: startDate || null,
+        endDate: endDate || null
+    };
+}
