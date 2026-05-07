@@ -8,9 +8,10 @@ const snap = new midtransClient.Snap({
 
 export const paymentService = {
     async createSnapToken(orderId, amount, customerDetails = {}) {
+        const uniqueOrderId = `RENTPS-${orderId}-${Date.now()}`;
         const parameter = {
             transaction_details: {
-                order_id: orderId,
+                order_id: uniqueOrderId,
                 gross_amount: amount
             },
             customer_details: customerDetails,

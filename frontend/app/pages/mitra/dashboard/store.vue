@@ -204,13 +204,16 @@ const deletePhoto = async (id) => {
 }
 
 // === PROFILE ===
-const profileForm = reactive({ shopName: '', address: '', description: '' })
+const profileForm = reactive({ shopName: '', address: '', description: '', latitude: '', longitude: '', npwp: '' })
 
 watchEffect(() => {
   if (mitraData.value?.shopName) {
     profileForm.shopName = mitraData.value.shopName
     profileForm.address = mitraData.value.address
     profileForm.description = mitraData.value.description
+    profileForm.latitude = mitraData.value.latitude || ''
+    profileForm.longitude = mitraData.value.longitude || ''
+    profileForm.npwp = mitraData.value.npwp || ''
   }
 })
 
@@ -611,6 +614,31 @@ const tabs = [
                 <div class="relative">
                   <Icon name="heroicons:document-text-20-solid" class="absolute left-6 top-8 text-gray-300 w-6 h-6" />
                   <textarea v-model="profileForm.description" class="w-full bg-gray-50 border-2 border-gray-50 rounded-3xl pl-16 pr-8 py-6 min-h-[150px] text-navy font-bold focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner" placeholder="Tuliskan fasilitas spesial di rental Anda..."></textarea>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">NPWP (Opsional)</label>
+                <div class="relative">
+                  <Icon name="heroicons:identification-20-solid" class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 w-6 h-6" />
+                  <input v-model="profileForm.npwp" type="text" placeholder="00.000.000.0-000.000" class="w-full bg-gray-50 border-2 border-gray-50 rounded-3xl pl-16 pr-8 py-6 text-navy font-bold focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:col-span-2">
+                <div class="space-y-3">
+                  <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Latitude</label>
+                  <div class="relative">
+                    <Icon name="heroicons:map-20-solid" class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 w-6 h-6" />
+                    <input v-model="profileForm.latitude" type="number" step="any" placeholder="-6.123456" class="w-full bg-gray-50 border-2 border-gray-50 rounded-3xl pl-16 pr-8 py-6 text-navy font-bold focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner">
+                  </div>
+                </div>
+                <div class="space-y-3">
+                  <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Longitude</label>
+                  <div class="relative">
+                    <Icon name="heroicons:map-20-solid" class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 w-6 h-6" />
+                    <input v-model="profileForm.longitude" type="number" step="any" placeholder="106.123456" class="w-full bg-gray-50 border-2 border-gray-50 rounded-3xl pl-16 pr-8 py-6 text-navy font-bold focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner">
+                  </div>
                 </div>
               </div>
             </div>

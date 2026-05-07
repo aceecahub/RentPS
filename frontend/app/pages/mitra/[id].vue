@@ -18,11 +18,11 @@ const handleBooking = (unitId) => {
   navigateTo(`/booking/${mitraId}?unitId=${unitId}`)
 }
 
-const stats = [
-  { label: 'Rating', value: '4.8', icon: 'heroicons:star-solid', color: 'text-yellow-400' },
-  { label: 'Ulasan', value: '124', icon: 'heroicons:chat-bubble-bottom-center-text-20-solid', color: 'text-blue-500' },
+const stats = computed(() => [
+  { label: 'Rating', value: mitra.value?.avgRating || '0.0', icon: 'heroicons:star-solid', color: 'text-yellow-400' },
+  { label: 'Ulasan', value: mitra.value?.reviewsCount || '0', icon: 'heroicons:chat-bubble-bottom-center-text-20-solid', color: 'text-blue-500' },
   { label: 'Terjual', value: '500+', icon: 'heroicons:shopping-bag-20-solid', color: 'text-green-500' },
-]
+])
 </script>
 
 <template>
@@ -188,6 +188,59 @@ const stats = [
                     </button>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <!-- Reviews Section -->
+            <div id="reviews" class="space-y-10">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                  <div class="w-1.5 h-8 bg-primary-500 rounded-full"></div>
+                  <h2 class="text-3xl font-black text-navy tracking-tight">Ulasan Pelanggan</h2>
+                </div>
+                <div class="flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100">
+                  <Icon name="heroicons:star-solid" class="text-yellow-400 w-5 h-5" />
+                  <span class="text-lg font-black text-navy">{{ mitra.avgRating || '0.0' }}</span>
+                  <span class="text-sm text-gray-400 font-bold">/ 5.0</span>
+                </div>
+              </div>
+
+              <div v-if="mitra.reviews?.length > 0" class="grid grid-cols-1 gap-6">
+                <div 
+                  v-for="review in mitra.reviews" 
+                  :key="review.id"
+                  class="bg-white p-8 rounded-[40px] border border-gray-100 hover:border-primary-100 transition-all group"
+                >
+                  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div class="flex items-center space-x-4">
+                      <div class="w-12 h-12 bg-navy rounded-2xl flex items-center justify-center text-white font-black text-lg">
+                        {{ review.user?.name?.charAt(0) }}
+                      </div>
+                      <div>
+                        <p class="font-black text-navy tracking-tight">{{ review.user?.name }}</p>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">
+                          {{ new Date(review.createdAt).toLocaleDateString('id-ID', { dateStyle: 'medium' }) }}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                      <Icon 
+                        v-for="i in 5" 
+                        :key="i" 
+                        name="heroicons:star-solid" 
+                        :class="['w-5 h-5', i <= review.rating ? 'text-yellow-400' : 'text-gray-100']" 
+                      />
+                    </div>
+                  </div>
+                  <p class="text-gray-500 font-medium leading-relaxed italic">"{{ review.comment || 'Tidak ada komentar.' }}"</p>
+                </div>
+              </div>
+
+              <div v-else class="bg-gray-50 rounded-[48px] p-20 text-center border-2 border-dashed border-gray-100">
+                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                  <Icon name="heroicons:chat-bubble-bottom-center" class="w-10 h-10 text-gray-200" />
+                </div>
+                <p class="text-gray-400 font-black uppercase tracking-widest text-xs">Belum ada ulasan untuk mitra ini.</p>
               </div>
             </div>
           </div>
