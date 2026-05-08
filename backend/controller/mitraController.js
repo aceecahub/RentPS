@@ -1,6 +1,25 @@
 
 import prisma from '../prisma/client.js'
-import { registerMitra, updateApprovalStatus, manualCloseAndOpen, operatingHours } from '../service/mitraService.js';
+import { registerMitra, updateApprovalStatus, manualCloseAndOpen, operatingHours, getIncomeReport } from '../service/mitraService.js';
+
+export const getIncomeReportController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { startDate, endDate, period } = req.query;
+
+    const result = await getIncomeReport(id, { startDate, endDate, period });
+
+    return res.status(200).json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 
 export const register = async (req, res) => {
   try {
@@ -149,14 +168,17 @@ export const deletePhoto = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const { id } = req.params;
-    const { shopName, address, description } = req.body;
+    const { shopName, address, description, latitude, longitude, npwp } = req.body;
 
     const result = await prisma.mitraProfile.update({
       where: { id: parseInt(id) },
       data: {
         shopName,
         address,
-        description
+        description,
+        latitude: latitude ? parseFloat(latitude) : null,
+        longitude: longitude ? parseFloat(longitude) : null,
+        npwp
       }
     });
 
@@ -181,16 +203,26 @@ export const getAllMitra = async (req, res) => {
         photos: true,
         units: {
           select: { pricePerHour: true }
+        },
+        reviews: {
+          select: { rating: true }
         }
       }
     })
     
-    // Calculate min price for each mitra
+    // Calculate stats for each mitra
     const formattedMitras = mitras.map(mitra => {
       const prices = mitra.units.map(u => parseFloat(u.pricePerHour))
+      const reviewsCount = mitra.reviews.length
+      const avgRating = reviewsCount > 0 
+        ? mitra.reviews.reduce((acc, r) => acc + r.rating, 0) / reviewsCount 
+        : 0
+
       return {
         ...mitra,
-        minPrice: prices.length > 0 ? Math.min(...prices) : 0
+        minPrice: prices.length > 0 ? Math.min(...prices) : 0,
+        reviewsCount,
+        avgRating: parseFloat(avgRating.toFixed(1))
       }
     })
 
@@ -215,9 +247,27 @@ export const getMitraById = async (req, res) => {
         photos: true,
         units: true,
         snacks: true,
-        operatingHours: true
+        operatingHours: true,
+        reviews: {
+          include: {
+            user: {
+              select: { name: true }
+            }
+          },
+          orderBy: { createdAt: 'desc' }
+        }
       }
     })
+
+    if (mitra) {
+      const reviewsCount = mitra.reviews.length
+      const avgRating = reviewsCount > 0 
+        ? mitra.reviews.reduce((acc, r) => acc + r.rating, 0) / reviewsCount 
+        : 0
+      
+      mitra.avgRating = parseFloat(avgRating.toFixed(1))
+      mitra.reviewsCount = reviewsCount
+    }
 
     if (!mitra) {
       return res.status(404).json({

@@ -11,8 +11,8 @@ const mitras = computed(() => {
       shopName: m.shopName,
       address: m.address,
       identityPhoto: m.photos?.find(p => p.isMain)?.photoUrl || m.photos?.[0]?.photoUrl || 'https://images.unsplash.com/photo-1605902711622-cfb43c4437b5?q=80&w=800&auto=format&fit=crop',
-      rating: 4.8,
-      reviewsCount: 124,
+      rating: m.avgRating || 0,
+      reviewsCount: m.reviewsCount || 0,
       minPrice: m.minPrice || 0
     }))
   }

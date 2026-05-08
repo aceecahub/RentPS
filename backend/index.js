@@ -1,5 +1,6 @@
-import express from 'express'
 import dotenv from 'dotenv'
+dotenv.config()
+import express from 'express'
 import cors from "cors"
 
 // routes class
@@ -9,9 +10,13 @@ import psRoutes from "./routes/psRoutes.js"
 import snackRoutes from "./routes/snackRoutes.js"
 import bookingRoutes from "./routes/bookingRoutes.js"
 import userRoutes from "./routes/userRoutes.js"
-dotenv.config()
+import paymentRoutes from "./routes/paymentRoutes.js"
+import { startBookingCron } from "./service/bookingExpiryServices.js"
 
 const app = express()
+
+// Start Cron Jobs
+startBookingCron()
 
 // Trust proxy for express-rate-limit
 app.set('trust proxy', 1)
@@ -35,6 +40,8 @@ app.use("/api/snack", snackRoutes)
 app.use("/api/booking", bookingRoutes)
 // user
 app.use("/api/user", userRoutes)
+// payment
+app.use("/api/payment", paymentRoutes)
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on http://localhost:${process.env.PORT}`)

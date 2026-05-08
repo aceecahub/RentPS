@@ -10,8 +10,37 @@ export default defineNuxtConfig({
   ],
   css: ['~/assets/css/main.css'],
 
+  
+  vite: {
+    server: {
+      allowedHosts: ["observing-unsliced-congrats.ngrok-free.dev"],
+      // Tambahkan hmr untuk ngrok agar hot reload tidak putus-putus
+      hmr: {
+        protocol: 'wss',
+        clientPort: 443
+      }
+    },
+    // Optimasi agar tidak scan semua library
+    optimizeDeps: {
+      include: ['@nuxt/icon']
+    }
+  },
+  
+  icon: {
+    serverBundle: 'local',
+    clientBundle: {
+      scan: true
+    },
+  },
+
   app: {
     head: {
+      script: [
+        {
+          src: 'https://app.sandbox.midtrans.com/snap/snap.js',
+          'data-client-key': 'Mid-client-nfNqzH8LPbrVtJKl'
+        }
+      ],
       meta: [
         {
           name: "viewport",
