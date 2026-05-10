@@ -4,7 +4,10 @@ const config = useRuntimeConfig()
 const mitraId = route.params.id
 
 // Fetch real data from backend
-const { data: response, pending, error } = await useFetch(`${config.public.apiBase}/mitra/${mitraId}`)
+const { data: response, pending, error } = await useFetch(`${config.public.apiBase}/mitra/${mitraId}`, {
+  key: `mitra-detail-${mitraId}`,
+  headers: useRequestHeaders(['cookie'])
+})
 
 const mitra = computed(() => response.value?.data || null)
 const activePhoto = ref(0)
@@ -99,7 +102,7 @@ const stats = computed(() => [
 
             <!-- Profile Info -->
             <div class="bg-white p-10 rounded-[48px] border border-gray-100 shadow-xl shadow-navy/5 relative overflow-hidden group">
-              <div class="absolute -top-12 -right-12 w-48 h-48 bg-primary-50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div class="absolute -top-12 -right-12 w-48 h-48 bg-primary-50 rounded-full blur-3xl opacity-0 group-hover:opacity-10 transition-opacity"></div>
               
               <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                 <h1 class="text-5xl font-black text-navy tracking-tight leading-tight">{{ mitra.shopName }}</h1>
@@ -265,9 +268,7 @@ const stats = computed(() => [
                       <p class="font-bold text-lg leading-none group-hover/item:text-primary-400 transition-colors">{{ snack.name }}</p>
                       <p class="text-sm text-primary-100/50 font-bold tracking-wide">Rp{{ parseFloat(snack.price).toLocaleString() }}</p>
                     </div>
-                    <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity">
-                      <Icon name="heroicons:plus-20-solid" class="w-5 h-5 text-primary-500" />
-                    </div>
+                   
                   </div>
                 </div>
                 

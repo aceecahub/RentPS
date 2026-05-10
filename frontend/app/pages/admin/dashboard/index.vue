@@ -1,13 +1,19 @@
 <script setup>
-const { user } = useAuth()
+const { user, isLoggedIn } = useAuth()
 const config = useRuntimeConfig()
 
+
 // Fetch Admin Stats
-const { data: statsRes, pending: statsPending } = await useFetch(`${config.public.apiBase}/mitra/admin/stats`)
+const { data: statsRes, pending: statsPending } = await useFetch(`${config.public.apiBase}/mitra/admin/stats`, {
+  key: 'admin-stats',
+  headers: useRequestHeaders(['cookie'])
+})
 
 // Fetch Pending Mitras
 const { data: pendingRes, pending: pendingLoading, refresh: refreshList } = await useFetch(`${config.public.apiBase}/mitra/admin/list`, {
-  query: { status: 'PENDING' }
+  key: 'admin-pending-mitras',
+  query: { status: 'PENDING' },
+  headers: useRequestHeaders(['cookie'])
 })
 
 const pendingMitras = computed(() => pendingRes.value?.data || [])

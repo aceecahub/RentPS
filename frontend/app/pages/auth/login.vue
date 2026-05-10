@@ -15,13 +15,12 @@ const handleLogin = async () => {
     
     if (result.success) {
       console.log('Login successful, user role:', user.value?.role)
-      // Gunakan window.location.href agar state kereload sempurna
       if (user.value?.role === 'ADMIN') {
-        window.location.href = '/admin/dashboard'
+        return navigateTo('/admin/dashboard')
       } else if (user.value?.role === 'MITRA') {
-        window.location.href = '/mitra/dashboard'
+        return navigateTo('/mitra/dashboard')
       } else {
-        window.location.href = '/'
+        return navigateTo('/')
       }
     } else {
       console.error('Login failed:', result.message)

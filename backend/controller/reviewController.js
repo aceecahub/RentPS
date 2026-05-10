@@ -11,11 +11,11 @@ export const createReview = async (req, res) => {
         })
 
         if (!booking) {
-            return res.status(404).json({ success: false, message: "Booking not found" })
+            return res.status(404).json({ success: false, message: "Booking tidak ditemukan" })
         }
 
         if (booking.status !== 'COMPLETED') {
-            return res.status(400).json({ success: false, message: "Only completed bookings can be reviewed" })
+            return res.status(400).json({ success: false, message: "Booking harus selesai terlebih dahulu" })
         }
 
         // Check if already reviewed
@@ -24,7 +24,7 @@ export const createReview = async (req, res) => {
         })
 
         if (existingReview) {
-            return res.status(400).json({ success: false, message: "You have already reviewed this booking" })
+            return res.status(400).json({ success: false, message: "Anda sudah mereview booking ini" })
         }
 
         const review = await prisma.review.create({
@@ -39,7 +39,7 @@ export const createReview = async (req, res) => {
 
         res.status(201).json({
             success: true,
-            message: "Review submitted successfully",
+            message: "Review berhasil ditambahkan",
             data: review
         })
     } catch (error) {

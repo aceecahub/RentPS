@@ -2,9 +2,6 @@
 const { user, isLoggedIn } = useAuth()
 const config = useRuntimeConfig()
 
-if (!isLoggedIn.value || user.value?.role !== 'ADMIN') {
-  navigateTo('/')
-}
 
 // Filter state
 const filterStatus = ref('')

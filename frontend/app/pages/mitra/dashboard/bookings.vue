@@ -2,12 +2,12 @@
 const { user, isLoggedIn } = useAuth()
 const config = useRuntimeConfig()
 
-if (!isLoggedIn.value || user.value?.role !== 'MITRA') {
-  navigateTo('/')
-}
 
 const { data: response, pending, refresh } = await useFetch(`${config.public.apiBase}/booking/mitra`, {
-  query: { userId: user.value?.id }
+  key: 'mitra-all-bookings',
+  query: computed(() => ({ userId: user.value?.id })),
+  headers: useRequestHeaders(['cookie']),
+  watch: [user]
 })
 
 const bookings = computed(() => response.value?.data || [])

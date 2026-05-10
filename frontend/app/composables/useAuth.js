@@ -1,28 +1,13 @@
 export const useAuth = () => {
-  const token = useState('auth_token', () => null)
-  const user = useState('auth_user', () => null)
+  const token = useCookie('auth_token', {
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+    path: '/'
+  })
+  const user = useCookie('auth_user', {
+    maxAge: 60 * 60 * 24 * 7,
+    path: '/'
+  })
   const config = useRuntimeConfig()
-
-  // Immediate initialization on client side
-  if (process.client) {
-    const initAuth = () => {
-      const storedToken = localStorage.getItem('auth_token')
-      const storedUser = localStorage.getItem('auth_user')
-      
-      if (storedToken && !token.value) {
-        token.value = storedToken
-      }
-      
-      if (storedUser && !user.value) {
-        try {
-          user.value = JSON.parse(storedUser)
-        } catch (e) {
-          localStorage.removeItem('auth_user')
-        }
-      }
-    }
-    initAuth()
-  }
 
   const login = async (email, password) => {
     try {
@@ -33,11 +18,6 @@ export const useAuth = () => {
       
       token.value = data.token
       user.value = data.user
-      
-      if (process.client) {
-        localStorage.setItem('auth_token', data.token)
-        localStorage.setItem('auth_user', JSON.stringify(data.user))
-      }
       
       return { success: true }
     } catch (error) {
@@ -70,11 +50,7 @@ export const useAuth = () => {
     token.value = null
     user.value = null
     
-    if (process.client) {
-      localStorage.removeItem('auth_token')
-      localStorage.removeItem('auth_user')
-    }
-    
+    // Clear cookies explicitly if needed, but nulling them usually works
     navigateTo('/auth/login')
   }
 

@@ -1,16 +1,23 @@
 <script setup>
-const { user } = useAuth()
+const { user, isLoggedIn } = useAuth()
 const config = useRuntimeConfig()
+
 
 // Fetch Dashboard Stats
 const { data: statsRes, pending: statsPending } = await useFetch(`${config.public.apiBase}/mitra/stats`, {
-  query: { userId: user.value?.id }
+  key: 'mitra-stats',
+  query: computed(() => ({ userId: user.value?.id })),
+  headers: useRequestHeaders(['cookie']),
+  watch: [user]
 })
 
 // Fetch Recent Bookings
 const { data: bookingsRes, pending: bookingsPending } = await useFetch(`${config.public.apiBase}/booking/mitra`, {
+  key: 'mitra-recent-bookings',
   method: 'GET',
-  query: { userId: user.value?.id } 
+  query: computed(() => ({ userId: user.value?.id })),
+  headers: useRequestHeaders(['cookie']),
+  watch: [user]
 })
 
 const stats = computed(() => [

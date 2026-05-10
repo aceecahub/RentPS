@@ -2,13 +2,13 @@
 const { user, isLoggedIn } = useAuth()
 const config = useRuntimeConfig()
 
-if (!isLoggedIn.value || user.value?.role !== 'ADMIN') {
-  navigateTo('/')
-}
 
 const searchQuery = ref('')
 
-const { data: response, pending } = await useFetch(`${config.public.apiBase}/user/all`)
+const { data: response, pending } = await useFetch(`${config.public.apiBase}/user/all`, {
+  key: 'admin-all-users',
+  headers: useRequestHeaders(['cookie'])
+})
 
 const allUsers = computed(() => response.value?.data || [])
 const filteredUsers = computed(() => {

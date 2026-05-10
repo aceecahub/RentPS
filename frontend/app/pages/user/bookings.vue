@@ -2,12 +2,12 @@
 const config = useRuntimeConfig()
 const { user, token, isLoggedIn } = useAuth()
 
-if (!isLoggedIn.value) {
-  navigateTo('/auth/login')
-}
 
 const { data: response, pending, refresh } = await useFetch(`${config.public.apiBase}/booking/user`, {
-  query: { userId: user.value?.id } 
+  key: 'user-all-bookings',
+  query: computed(() => ({ userId: user.value?.id })),
+  headers: useRequestHeaders(['cookie']),
+  watch: [user]
 })
 
 const bookings = computed(() => response.value?.data || [])

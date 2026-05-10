@@ -2,13 +2,14 @@
 const { user, isLoggedIn } = useAuth()
 const config = useRuntimeConfig()
 
-if (!isLoggedIn.value) {
+if (!isLoggedIn.value || (user.value?.role !== 'CUSTOMER' && user.value?.role !== 'ADMIN')) {
   navigateTo('/auth/login')
 }
 
 const isLoading = ref(true)
 const profileForm = reactive({
   name: user.value?.name || '',
+  password: '', // Changed to empty for new password entry
   phone: '',
   address: '',
   avatarUrl: '',
@@ -184,6 +185,16 @@ const saveProfile = async () => {
               <Icon name="heroicons:envelope-20-solid" class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input :value="user?.email" type="email" class="w-full bg-gray-100 border-2 border-transparent rounded-2xl pl-16 pr-8 py-5 text-gray-500 font-bold cursor-not-allowed" disabled>
             </div>
+          </div>
+
+          <!-- Password -->
+          <div class="space-y-3">
+            <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">New Password (Optional)</label>
+            <div class="relative">
+              <Icon name="heroicons:lock-closed-20-solid" class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 w-5 h-5" />
+              <input v-model="profileForm.password" type="password" placeholder="••••••••" class="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl pl-16 pr-8 py-5 text-navy font-black focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner">
+            </div>
+            <p class="text-[9px] text-gray-400 font-medium ml-1">Kosongkan jika tidak ingin mengubah password.</p>
           </div>
           
           <!-- Phone -->
