@@ -117,7 +117,7 @@ const saveProfile = async () => {
         <!-- Avatar Section -->
         <div class="relative z-10 flex flex-col md:flex-row items-center gap-10">
           <div class="relative group/avatar">
-            <div class="w-32 h-32 rounded-full bg-navy border-4 border-white shadow-2xl overflow-hidden flex-shrink-0 flex items-center justify-center transform transition-all duration-500 group-hover/avatar:scale-105 group-hover/avatar:rotate-3">
+            <div class="w-32 h-32 rounded-full bg-navy border-4 border-white shadow-2xl overflow-hidden flex-shrink-0 flex items-center justify-center transform transition-all duration-500">
               <img v-if="profileForm.avatarUrl" :src="profileForm.avatarUrl" class="w-full h-full object-cover" alt="Profile" />
               <div v-else class="w-full h-full flex items-center justify-center bg-navy">
                  <Icon name="heroicons:user-solid" class="w-16 h-16 text-primary-400/50" />
@@ -134,7 +134,7 @@ const saveProfile = async () => {
           
           <div class="flex-grow w-full space-y-4">
             <div>
-              <h3 class="text-xl font-black text-navy tracking-tight">Foto Profil</h3>
+              <h3 class="text-xl font-black text-navy tracking-tight">Foto Profile</h3>
               <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Upload foto terbaikmu (Max 2MB)</p>
             </div>
             

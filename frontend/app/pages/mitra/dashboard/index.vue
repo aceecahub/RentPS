@@ -80,10 +80,6 @@ const recentBookings = computed(() => {
           <Icon name="heroicons:cog-6-tooth-20-solid" class="mr-2 w-5 h-5 text-gray-400" />
           Pengaturan Toko
         </NuxtLink>
-        <button class="bg-navy text-white px-6 py-3 rounded-2xl font-black text-sm hover:bg-primary-500 hover:text-navy transition-all shadow-lg shadow-navy/10 flex items-center">
-          <Icon name="heroicons:plus-20-solid" class="mr-2 w-5 h-5" />
-          Tambah Unit
-        </button>
       </div>
     </div>
 
@@ -199,14 +195,6 @@ const recentBookings = computed(() => {
                 <span class="font-black text-sm uppercase tracking-widest">Kelola Pesanan</span>
               </div>
               <Icon name="heroicons:arrow-right-20-solid" class="w-5 h-5 opacity-0 group-hover:opacity-100 transition-all" />
-            </NuxtLink>
-            
-            <NuxtLink to="/mitra/dashboard/store" class="flex items-center justify-between p-5 bg-gray-50 text-navy rounded-3xl hover:bg-white hover:shadow-lg transition-all group border border-transparent hover:border-gray-100">
-              <div class="flex items-center">
-                <Icon name="heroicons:computer-desktop-20-solid" class="w-6 h-6 mr-4 text-gray-400 group-hover:text-primary-500" />
-                <span class="font-black text-sm uppercase tracking-widest">Update Unit PS</span>
-              </div>
-              <Icon name="heroicons:chevron-right-20-solid" class="w-5 h-5 opacity-0 group-hover:opacity-100 transition-all" />
             </NuxtLink>
 
             <NuxtLink to="/mitra/dashboard/income" class="flex items-center justify-between p-5 bg-gray-50 text-navy rounded-3xl hover:bg-white hover:shadow-lg transition-all group border border-transparent hover:border-gray-100">

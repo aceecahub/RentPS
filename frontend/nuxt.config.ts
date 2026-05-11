@@ -15,10 +15,20 @@ export default defineNuxtConfig({
   vite: {
     server: {
       allowedHosts: ["observing-unsliced-congrats.ngrok-free.dev"],
-      // Tambahkan hmr untuk ngrok agar hot reload tidak putus-putus
-      hmr: {
-        protocol: 'wss',
-        clientPort: 443
+      
+      // hot reload
+      hmr: process.env.NODE_ENV === 'development' && !process.env.NGROK 
+        ? true 
+        : {
+            protocol: 'wss',
+            host: 'observing-unsliced-congrats.ngrok-free.dev',
+            clientPort: 443
+          },
+          
+      // Tambahkan ini untuk memastikan perubahan file terdeteksi sistem
+      watch: {
+        usePolling: true,
+        interval: 100
       }
     },
     // Optimasi agar tidak scan semua library
