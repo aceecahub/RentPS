@@ -1,6 +1,6 @@
 import prisma from '../prisma/client.js'
 import bcrypt from 'bcrypt'
-import { registerMitra, updateApprovalStatus, manualCloseAndOpen, operatingHours, getIncomeReport } from '../service/mitraService.js';
+import { setupMitraProfile, updateApprovalStatus, manualCloseAndOpen, operatingHours, getIncomeReport } from '../service/mitraService.js';
 
 export const getIncomeReportController = async (req, res) => {
   try {
@@ -21,14 +21,19 @@ export const getIncomeReportController = async (req, res) => {
   }
 };
 
-export const register = async (req, res) => {
+export const setupProfile = async (req, res) => {
   try {
-    // Controller hanya bertugas mempassing data
-    const result = await registerMitra(req.body);
+    const { userId, ...profileData } = req.body;
+    
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "User ID is required" });
+    }
+
+    const result = await setupMitraProfile(userId, profileData);
     
     return res.status(201).json({
       success: true,
-      message: 'Pendaftaran mitra berhasil, menunggu approval admin.',
+      message: 'Profil mitra berhasil disimpan, menunggu approval admin.',
       data: result
     });
   } catch (error) {
@@ -120,14 +125,14 @@ export const addPhoto = async (req, res) => {
     const isMainBool = isMain === 'true' || isMain === true;
     if (isMainBool) {
       await prisma.mitraPhoto.updateMany({
-        where: { mitraId: parseInt(id) },
+        where: { mitraId: id },
         data: { isMain: false }
       });
     }
 
     const result = await prisma.mitraPhoto.create({
       data: {
-        mitraId: parseInt(id),
+        mitraId: id,
         photoUrl,
         isMain: isMainBool,
         caption
@@ -151,7 +156,7 @@ export const deletePhoto = async (req, res) => {
   try {
     const { photoId } = req.params;
     await prisma.mitraPhoto.delete({
-      where: { id: parseInt(photoId) }
+      where: { id: photoId }
     });
     return res.status(200).json({
       success: true,
@@ -171,7 +176,7 @@ export const updateProfile = async (req, res) => {
     const { shopName, address, description, latitude, longitude, npwp } = req.body;
 
     const result = await prisma.mitraProfile.update({
-      where: { id: parseInt(id) },
+      where: { id: id },
       data: {
         shopName,
         address,
@@ -259,7 +264,7 @@ export const getMitraById = async (req, res) => {
   try {
     const { id } = req.params
     const mitra = await prisma.mitraProfile.findUnique({
-      where: { id: parseInt(id) },
+      where: { id: id },
       include: {
         photos: true,
         units: true,
@@ -309,7 +314,7 @@ export const getDashboardStats = async (req, res) => {
   try {
     const userId = req.query.userId || req.body.userId
     const mitra = await prisma.mitraProfile.findUnique({
-      where: { userId: parseInt(userId) },
+      where: { userId: userId },
       include: {
         units: true,
         bookings: {

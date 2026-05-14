@@ -56,24 +56,70 @@ enum DayOfWeek {
 // --- MODELS ---
 
 model User {
-  id            Int        @id @default(autoincrement())
+  id            String        @id @default(cuid())
   email         String        @unique
-  password      String
-  name          String
+  name          String?
+  emailVerified Boolean       @default(false)
+  image         String?       @db.Text
+  password      String?       @db.Text
   role          UserRole      @default(CUSTOMER)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
-  // Relations
+  // Better Auth Relations
+  sessions      Session[]
+  accounts      Account[]
+
+  // Existing Relations
   mitraProfile  MitraProfile? 
   userProfile   UserProfile?
   bookings      Booking[]
   reviews       Review[]
 }
 
+model Session {
+  id        String   @id @default(uuid())
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?  @db.Text
+  userAgent String?  @db.Text
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+}
+
+model Account {
+  id                    String    @id @default(uuid())
+  accountId             String    @db.Text
+  providerId            String    @db.Text
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?   @db.Text
+  password              String?   @db.Text
+  createdAt             DateTime
+  updatedAt             DateTime
+}
+
+model Verification {
+  id         String    @id @default(uuid())
+  identifier String    @db.Text
+  value      String    @db.Text
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+}
+
 model UserProfile {
   id          Int      @id @default(autoincrement())
-  userId      Int      @unique
+  userId      String   @unique
   user        User     @relation(fields: [userId], references: [id])
   
   phone       String?  @db.VarChar(20)
@@ -87,8 +133,8 @@ model UserProfile {
 
 model MitraProfile {
   id                Int           @id @default(autoincrement())
-  userId            Int           @unique
-  user              User             @relation(fields: [userId], references: [id])
+  userId            String        @unique
+  user              User          @relation(fields: [userId], references: [id])
   
   // Info Bisnis
   shopName          String
@@ -178,11 +224,11 @@ model Snack {
 
 model Booking {
   id           Int          @id @default(autoincrement())
-  userId       Int
-  user         User            @relation(fields: [userId], references: [id])
+  userId       String
+  user         User         @relation(fields: [userId], references: [id])
   
   mitraId      Int
-  mitra        MitraProfile    @relation(fields: [mitraId], references: [id])
+  mitra        MitraProfile @relation(fields: [mitraId], references: [id])
 
   unitId       Int
   unit         PlaystationUnit @relation(fields: [unitId], references: [id])
@@ -245,7 +291,7 @@ model Review {
   bookingId    Int       @unique
   booking      Booking      @relation(fields: [bookingId], references: [id])
   
-  userId       Int
+  userId       String
   user         User         @relation(fields: [userId], references: [id])
   
   mitraId      Int

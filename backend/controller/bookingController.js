@@ -108,7 +108,7 @@ export const getUnitSchedule = async (req, res) => {
         // We only return startTime and endTime for privacy
         const bookings = await prisma.booking.findMany({
             where: {
-                unitId: parseInt(unitId),
+                unitId: unitId,
                 status: { notIn: ["CANCELLED"] },
                 ...(date && {
                     startTime: {

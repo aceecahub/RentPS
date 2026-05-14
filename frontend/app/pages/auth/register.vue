@@ -48,6 +48,28 @@ const handleRegister = async () => {
   })
   
   if (result.success) {
+    // Jika mendaftar sebagai MITRA, kirim data profil ekstra ke backend
+    if (role.value === 'MITRA') {
+      try {
+        const config = useRuntimeConfig()
+        await $fetch(config.public.apiBase + '/mitra/setup-profile', {
+          method: 'POST',
+          body: {
+            userId: result.data?.user?.id,
+            shopName: form.shopName,
+            address: form.address,
+            nik: form.nik,
+            identityPhoto: form.identityPhoto,
+            photos: form.photos
+          }
+        })
+      } catch (err) {
+        errorMsg.value = "Pendaftaran akun berhasil, tetapi gagal menyimpan profil toko. Hubungi admin."
+        isLoading.value = false
+        return
+      }
+    }
+
     successMsg.value = result.message + '. Silakan login.'
     setTimeout(() => navigateTo('/auth/login'), 2000)
   } else {

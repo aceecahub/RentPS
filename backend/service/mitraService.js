@@ -1,49 +1,34 @@
 import prisma from '../prisma/client.js'
 import bcrypt from "bcrypt"
 
-export const registerMitra = async (inputData) => {
+export const setupMitraProfile = async (userId, inputData) => {
     const { 
-        email, password, name, 
         shopName, address, latitude, longitude,
-        nik, npwp, identityPhoto, // Data untuk Approval
-        photos // Array URL foto bangunan/ruangan PS
+        nik, npwp, identityPhoto, 
+        photos 
     } = inputData
 
-    const hashedPassword = await bcrypt.hash(password, 10)
-
-    return await prisma.user.create({
+    return await prisma.mitraProfile.create({
         data: {
-            email,
-            password: hashedPassword,
-            name,
-            role: 'MITRA',
-            mitraProfile: {
-                create: {
-                    shopName,
-                    address,
-                    latitude: latitude ? parseFloat(latitude) : null,
-                    longitude: longitude ? parseFloat(longitude) : null,
-                    nik,
-                    npwp,
-                    identityPhoto, // Foto KTP
-                    approvalStatus: 'PENDING',
-                    // Relasi ke tabel MitraPhoto
-                    photos: {
-                        create: photos && photos.length > 0 ? photos.map((url, index) => ({
-                            photoUrl: url,
-                            isMain: index === 0,
-                            caption: `Foto Ruangan ${index + 1}`
-                        })) : []
-                    }
-                }
+            userId: userId, // Link to Better Auth user
+            shopName,
+            address,
+            latitude: latitude ? parseFloat(latitude) : null,
+            longitude: longitude ? parseFloat(longitude) : null,
+            nik,
+            npwp,
+            identityPhoto,
+            approvalStatus: 'PENDING',
+            photos: {
+                create: photos && photos.length > 0 ? photos.map((url, index) => ({
+                    photoUrl: url,
+                    isMain: index === 0,
+                    caption: `Foto Ruangan ${index + 1}`
+                })) : []
             }
         },
         include: {
-            mitraProfile: {
-                include: {
-                    photos: true
-                }
-            }
+            photos: true
         }
     })
 }
@@ -51,7 +36,7 @@ export const registerMitra = async (inputData) => {
 
 export const updateApprovalStatus = async (mitraId, approvalStatus, rejectionReason = null) => {
     return await prisma.mitraProfile.update({
-        where: { id: parseInt(mitraId) },
+        where: { id: mitraId },
         data: { 
             approvalStatus: approvalStatus,
             rejectionReason: rejectionReason 
@@ -62,7 +47,7 @@ export const updateApprovalStatus = async (mitraId, approvalStatus, rejectionRea
 
 export const manualCloseAndOpen = async (mitraId, isManualClosed, manualCloseReason = null) => {
     return await prisma.mitraProfile.update({
-        where: { id: parseInt(mitraId) },
+        where: { id: mitraId },
         data: { 
             isManualClosed: isManualClosed,
             manualCloseReason: manualCloseReason 
@@ -73,7 +58,7 @@ export const manualCloseAndOpen = async (mitraId, isManualClosed, manualCloseRea
 export const operatingHours = async (mitraId, day, openTime, closeTime, isOpen) => {
     return await prisma.operatingHour.create({
         data: {
-            mitraId: parseInt(mitraId),
+            mitraId: mitraId,
             day: day,
             openTime: openTime,
             closeTime: closeTime,
@@ -84,13 +69,13 @@ export const operatingHours = async (mitraId, day, openTime, closeTime, isOpen) 
 
 export const findMitraByUserId = async (userId) => {
     return await prisma.mitraProfile.findUnique({
-        where: { userId: parseInt(userId) }
+        where: { userId: userId }
     })
 }
 
 export const getIncomeReport = async (mitraId, { startDate, endDate, period }) => {
     let whereClause = {
-        mitraId: parseInt(mitraId),
+        mitraId: mitraId,
         status: 'COMPLETED'
     };
 

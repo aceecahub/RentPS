@@ -15,7 +15,7 @@ export const createBooking = async (inputData) => {
 
             const overlap = await tx.booking.findFirst({
                 where: {
-                    unitId: parseInt(unitId),
+                    unitId: unitId,
                     status: { notIn: ["CANCELLED"] },
                     AND: [
                         { startTime: { lt: endDate } },
@@ -31,9 +31,9 @@ export const createBooking = async (inputData) => {
             // 1. Booking & BookingSnack
             const booking = await tx.booking.create({
                 data: {
-                    userId: parseInt(userId),
-                    mitraId: parseInt(mitraId),
-                    unitId: parseInt(unitId),
+                    userId: userId,
+                    mitraId: mitraId,
+                    unitId: unitId,
                     startTime: new Date(startTime),
                     endTime: new Date(endTime),
                     durationHour: parseInt(durationHour),
@@ -46,7 +46,7 @@ export const createBooking = async (inputData) => {
                     ...(snacks && snacks.length > 0 && {
                         snacks: {
                             create: snacks.map((s) => ({
-                                snackId: parseInt(s.snackId),
+                                snackId: s.snackId,
                                 quantity: parseInt(s.quantity),
                                 priceAtBooking: parseFloat(s.priceAtBooking)
                             }))
@@ -60,7 +60,7 @@ export const createBooking = async (inputData) => {
             if (snacks && snacks.length > 0) {
                 for (const item of snacks) {
                     const updatedSnack = await tx.snack.update({
-                        where: { id: parseInt(item.snackId) },
+                        where: { id: item.snackId },
                         data: {
                             stock: { decrement: parseInt(item.quantity) }
                         }
@@ -83,7 +83,7 @@ export const createBooking = async (inputData) => {
 export const getBookingById = async (id) => {
     try {
         return await prisma.booking.findUnique({
-            where: { id: parseInt(id) },
+            where: { id: id },
             include: {
                 user: { select: { name: true, email: true } },
                 mitra: true,
@@ -102,7 +102,7 @@ export const getBookingById = async (id) => {
 export const getUserBookings = async (userId) => {
     try {
         return await prisma.booking.findMany({
-            where: { userId: parseInt(userId) },
+            where: { userId: userId },
             include: {
                 mitra: true,
                 unit: true,
@@ -118,7 +118,7 @@ export const getUserBookings = async (userId) => {
 export const getMitraBookings = async (mitraId) => {
     try {
         return await prisma.booking.findMany({
-            where: { mitraId: parseInt(mitraId) },
+            where: { mitraId: mitraId },
             include: {
                 user: { select: { name: true, email: true } },
                 unit: true,
@@ -134,7 +134,7 @@ export const getMitraBookings = async (mitraId) => {
 export const updateBookingStatus = async (id, status) => {
     try {
         return await prisma.booking.update({
-            where: { id: parseInt(id) },
+            where: { id: id },
             data: { status }
         })
     } catch (error) {

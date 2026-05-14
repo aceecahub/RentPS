@@ -7,7 +7,7 @@ export const createTransaction = async (req, res) => {
 
         // 1. Ambil data booking dari database
         const booking = await prisma.booking.findUnique({
-            where: { id: parseInt(bookingId) },
+            where: { id: bookingId },
             include: { user: true }
         });
 
@@ -49,7 +49,7 @@ export const handleMidtransWebhook = async (req, res) => {
 
         // Update Payment Status
         const updatedPayment = await prisma.payment.update({
-            where: { bookingId: parseInt(orderId) },
+            where: { bookingId: orderId },
             data: { 
                 status: paymentStatus === 'SETTLEMENT' ? 'SETTLEMENT' : 
                         paymentStatus === 'FAILED' ? 'FAILED' : 'PENDING',
@@ -60,12 +60,12 @@ export const handleMidtransWebhook = async (req, res) => {
         // If payment is settled, update Booking Status to CONFIRMED
         if (paymentStatus === 'SETTLEMENT') {
             await prisma.booking.update({
-                where: { id: parseInt(orderId) },
+                where: { id: orderId },
                 data: { status: 'CONFIRMED' }
             });
         } else if (paymentStatus === 'FAILED') {
             await prisma.booking.update({
-                where: { id: parseInt(orderId) },
+                where: { id: orderId },
                 data: { status: 'CANCELLED' }
             });
         }

@@ -2,6 +2,8 @@ import dotenv from 'dotenv'
 dotenv.config()
 import express from 'express'
 import cors from "cors"
+import { toNodeHandler } from "better-auth/node"
+import { auth } from "./config/auth.js"
 
 // routes class
 import authRoutes from "./routes/authRoutes.js"
@@ -25,8 +27,15 @@ app.get('/', (req, res) => {
     res.send('Hello express!')
 })
 
-app.use(cors())
+app.use(cors({
+    origin: ["http://localhost:3000", "http://localhost:3001", "https://observing-unsliced-congrats.ngrok-free.dev"],
+    credentials: true
+}))
+
 app.use(express.json())
+app.use(express.urlencoded({extended: true}))
+
+app.use("/api/auth", toNodeHandler(auth));
 
 // auth
 app.use("/api/auth", authRoutes)

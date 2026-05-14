@@ -7,7 +7,7 @@ export const getAllPsService = async () => {
 
 export const getPsByIdService = async (id) => {
     return await prisma.playstationUnit.findUnique({
-        where: { id: parseInt(id) }
+        where: { id: id }
     })
 }
 
@@ -29,7 +29,7 @@ export const updatePsService = async (id, data) => {
     const { name, type, pricePerHour, isAvailable } = data
 
     return await prisma.playstationUnit.update({
-        where: { id: parseInt(id) },
+        where: { id: id },
         data: {
             name,
             type,
@@ -41,6 +41,6 @@ export const updatePsService = async (id, data) => {
 
 export const deletePsService = async (id) => {
     return await prisma.playstationUnit.delete({
-        where: { id: parseInt(id) }
+        where: { id: id }
     })
 }

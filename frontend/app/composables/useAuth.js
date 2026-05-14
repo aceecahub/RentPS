@@ -1,65 +1,91 @@
+import { computed, ref } from "vue"
+
 export const useAuth = () => {
-  const token = useCookie('auth_token', {
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: '/'
-  })
-  const user = useCookie('auth_user', {
-    maxAge: 60 * 60 * 24 * 7,
-    path: '/'
-  })
-  const config = useRuntimeConfig()
+  const { $authClient } = useNuxtApp()
+  const { signIn, signUp, signOut } = $authClient
+  
+  // Use globally fetched session from middleware
+  const session = useState('auth-session', () => null)
+  const isPending = ref(false) // No longer pending since middleware awaits it
+  const error = ref(null)
+  
+  const user = computed(() => session.value?.user)
+  const isLoggedIn = computed(() => !!session.value)
 
   const login = async (email, password) => {
     try {
-      const data = await $fetch(`${config.public.apiBase}/auth/login`, {
-        method: 'POST',
-        body: { email, password }
+      const { data, error } = await signIn.email({
+        email,
+        password,
       })
-      
-      token.value = data.token
-      user.value = data.user
-      
-      return { success: true }
-    } catch (error) {
-      console.error('Login error:', error.response?._data || error)
+
+      if (error) {
+        return { 
+          success: false, 
+          message: error.message || 'Login gagal. Periksa kembali email dan password Anda.' 
+        }
+      }
+
+      return { success: true, data }
+    } catch (err) {
+      console.error('Login error:', err)
       return { 
         success: false, 
-        message: error.response?._data?.message || 'Terjadi kesalahan sistem. Silakan coba lagi.' 
+        message: 'Terjadi kesalahan sistem. Silakan coba lagi.' 
       }
+    }
+  }
+
+  const loginWithGoogle = async () => {
+    try {
+      await signIn.social({
+        provider: "google",
+        callbackURL: "/"
+      })
+    } catch (err) {
+      console.error('Google login error:', err)
     }
   }
 
   const register = async (formData) => {
     try {
-      const endpoint = formData.role === 'MITRA' ? '/mitra/register' : '/auth/register'
-      const data = await $fetch(`${config.public.apiBase}${endpoint}`, {
-        method: 'POST',
-        body: formData
+      const { data, error } = await signUp.email({
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
+        role: formData.role, // Pass the role to Better Auth!
       })
-      return { success: true, message: data.message }
-    } catch (error) {
-      console.error('Registration error:', error.response?._data || error)
+
+      if (error) {
+        return { success: false, message: error.message }
+      }
+
+      return { success: true, data, message: 'Registrasi berhasil!' }
+    } catch (err) {
+      console.error('Registration error:', err)
       return { 
         success: false, 
-        message: error.response?._data?.message || 'Registration failed' 
+        message: 'Registration failed' 
       }
     }
   }
 
-  const logout = () => {
-    token.value = null
-    user.value = null
-    
-    // Clear cookies explicitly if needed, but nulling them usually works
+  const logout = async () => {
+    await signOut()
+    session.value = null
     navigateTo('/auth/login')
   }
 
   return {
-    token,
+    session,
     user,
+    isPending,
+    error,
     login,
+    loginWithGoogle,
     register,
     logout,
-    isLoggedIn: computed(() => !!token.value)
+    isLoggedIn
   }
 }
+

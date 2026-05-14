@@ -7,7 +7,7 @@ export const getAllSnackService = async () => {
 
 export const getSnackByIdService = async (id) => {
     return await prisma.snack.findUnique({
-        where: { id: parseInt(id) }
+        where: { id: id }
     })
 }
 
@@ -28,7 +28,7 @@ export const updateSnackService = async (id, data) => {
     const { name, price, stock } = data
 
     return await prisma.snack.update({
-        where: { id: parseInt(id) },
+        where: { id: id },
         data: {
             name,
             price,
@@ -39,6 +39,6 @@ export const updateSnackService = async (id, data) => {
 
 export const deleteSnackService = async (id) => {
     return await prisma.snack.delete({
-        where: { id: parseInt(id) }
+        where: { id: id }
     })
 }

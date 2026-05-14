@@ -7,7 +7,7 @@ export const createReview = async (req, res) => {
 
         // Verify booking exists and belongs to user and is COMPLETED
         const booking = await prisma.booking.findUnique({
-            where: { id: parseInt(bookingId) }
+            where: { id: bookingId }
         })
 
         if (!booking) {
@@ -20,7 +20,7 @@ export const createReview = async (req, res) => {
 
         // Check if already reviewed
         const existingReview = await prisma.review.findUnique({
-            where: { bookingId: parseInt(bookingId) }
+            where: { bookingId: bookingId }
         })
 
         if (existingReview) {
@@ -29,8 +29,8 @@ export const createReview = async (req, res) => {
 
         const review = await prisma.review.create({
             data: {
-                bookingId: parseInt(bookingId),
-                userId: parseInt(userId),
+                bookingId: bookingId,
+                userId: userId,
                 mitraId: booking.mitraId,
                 rating: parseInt(rating),
                 comment
@@ -54,7 +54,7 @@ export const getMitraReviews = async (req, res) => {
     try {
         const { mitraId } = req.params
         const reviews = await prisma.review.findMany({
-            where: { mitraId: parseInt(mitraId) },
+            where: { mitraId: mitraId },
             include: {
                 user: {
                     select: { name: true }

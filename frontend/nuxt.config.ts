@@ -72,7 +72,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: '/api'
+      apiBase: '/api',
+      betterAuthUrl: process.env.VITE_BETTER_AUTH_URL || 'https://observing-unsliced-congrats.ngrok-free.dev'
     }
   }
 })

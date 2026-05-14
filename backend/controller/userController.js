@@ -49,7 +49,7 @@ export const getUserProfile = async (req, res) => {
     
     // Cari profil, jika tidak ada, buatkan otomatis
     let profile = await prisma.userProfile.findUnique({
-      where: { userId: parseInt(userId) },
+      where: { userId: userId },
       include: {
         user: {
           select: { name: true, email: true, role: true }
@@ -60,7 +60,7 @@ export const getUserProfile = async (req, res) => {
     if (!profile) {
       profile = await prisma.userProfile.create({
         data: {
-          userId: parseInt(userId)
+          userId: userId
         },
         include: {
           user: {
@@ -89,7 +89,7 @@ export const updateUserProfile = async (req, res) => {
 
     // Update profil
     const updatedProfile = await prisma.userProfile.upsert({
-      where: { userId: parseInt(userId) },
+      where: { userId: userId },
       update: {
         phone,
         address,
@@ -97,7 +97,7 @@ export const updateUserProfile = async (req, res) => {
         nik
       },
       create: {
-        userId: parseInt(userId),
+        userId: userId,
         phone,
         address,
         avatarUrl,
@@ -114,7 +114,7 @@ export const updateUserProfile = async (req, res) => {
 
     if (Object.keys(userUpdateData).length > 0) {
       await prisma.user.update({
-        where: { id: parseInt(userId) },
+        where: { id: userId },
         data: userUpdateData
       });
     }
@@ -147,12 +147,12 @@ export const updateAvatar = async (req, res) => {
 
     // Update profil
     const updatedProfile = await prisma.userProfile.upsert({
-      where: { userId: parseInt(userId) },
+      where: { userId: userId },
       update: {
         avatarUrl
       },
       create: {
-        userId: parseInt(userId),
+        userId: userId,
         avatarUrl
       }
     });

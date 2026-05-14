@@ -1,5 +1,5 @@
 import express from "express"
-import { register, approveMitra, CloseAndOpen, OperatingHours, getAllMitra, getMitraById, getDashboardStats, getAdminStats, getMitrasByStatus, addPhoto, deletePhoto, updateProfile, getIncomeReportController } from "../controller/mitraController.js"
+import { setupProfile, approveMitra, CloseAndOpen, OperatingHours, getAllMitra, getMitraById, getDashboardStats, getAdminStats, getMitrasByStatus, addPhoto, deletePhoto, updateProfile, getIncomeReportController } from "../controller/mitraController.js"
 import { uploadMitraPhoto } from "../middleware/uploadMiddleware.js"
 
 const router = express.Router()
@@ -10,7 +10,7 @@ router.get("/income/:id", getIncomeReportController)
 router.get("/admin/stats", getAdminStats)
 router.get("/admin/list", getMitrasByStatus)
 router.get("/:id", getMitraById)
-router.post("/register", register)
+router.post("/setup-profile", setupProfile)
 router.put("/profile/:id", updateProfile)
 router.put("/approve/:id", approveMitra)
 router.put("/cando/:id", CloseAndOpen)
