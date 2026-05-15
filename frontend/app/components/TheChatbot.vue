@@ -4,7 +4,7 @@ import { useRuntimeConfig } from '#app';
 
 const isOpen = ref(false);
 const messages = ref([
-  { id: 1, text: 'Halo! Selamat datang di Layanan Sewa PS Tasikmalaya. Ada yang bisa dibantu?', sender: 'bot' }
+  { id: 1, text: 'Halo! Selamat datang di Layanan RENT PS. Ada yang bisa dibantu?', sender: 'bot' }
 ]);
 const inputMessage = ref('');
 const messagesContainer = ref(null);

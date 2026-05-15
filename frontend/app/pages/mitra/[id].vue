@@ -21,6 +21,14 @@ const handleBooking = (unitId) => {
   navigateTo(`/booking/${mitraId}?unitId=${unitId}`)
 }
 
+const handleChat = () => {
+  if (!isLoggedIn.value) {
+    navigateTo('/auth/login')
+    return
+  }
+  navigateTo(`/chat/${mitraId}`)
+}
+
 const stats = computed(() => [
   { label: 'Rating', value: mitra.value?.avgRating || '0.0', icon: 'heroicons:star-solid', color: 'text-yellow-400' },
   { label: 'Ulasan', value: mitra.value?.reviewsCount || '0', icon: 'heroicons:chat-bubble-bottom-center-text-20-solid', color: 'text-blue-500' },
@@ -286,12 +294,21 @@ const stats = computed(() => [
               </div>
             </div>
 
-            <!-- Help Card -->
+            <!-- Chat Card -->
             <div class="bg-gray-50 p-10 rounded-[48px] border border-gray-100 space-y-6">
-              <h4 class="text-xl font-black text-navy">Butuh Bantuan?</h4>
-              <p class="text-gray-500 text-sm font-medium leading-loose">Punya pertanyaan seputar fasilitas atau ingin mengajukan komplain? Tim support kami siap membantu 24/7.</p>
-              <button class="w-full bg-white border-2 border-navy text-navy px-8 py-4 rounded-2xl font-black text-sm hover:bg-navy hover:text-white transition-all active:scale-95">
-                Hubungi Support
+              <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 bg-navy rounded-2xl flex items-center justify-center">
+                  <Icon name="heroicons:chat-bubble-left-right-20-solid" class="w-6 h-6 text-primary-400" />
+                </div>
+                <h4 class="text-xl font-black text-navy">Tanya Mitra Langsung</h4>
+              </div>
+              <p class="text-gray-500 text-sm font-medium leading-loose">Punya pertanyaan soal ketersediaan unit, harga, atau fasilitas? Chat langsung dengan {{ mitra.shopName }} sekarang!</p>
+              <button
+                @click="handleChat"
+                class="w-full bg-navy text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-primary-500 hover:text-navy transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-navy/20"
+              >
+                <Icon name="heroicons:chat-bubble-oval-left-ellipsis-20-solid" class="w-5 h-5" />
+                Chat Sekarang
               </button>
             </div>
           </div>

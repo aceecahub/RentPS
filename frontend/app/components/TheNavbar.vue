@@ -87,8 +87,16 @@ if (process.client) {
                   <NuxtLink v-if="user?.role === 'CUSTOMER'" to="/user/bookings" class="text-[9px] font-black tracking-widest uppercase bg-primary-500 text-navy px-3 py-1.5 rounded-full">
                     MY ORDER
                   </NuxtLink>
+                  <NuxtLink v-if="user?.role === 'CUSTOMER'" to="/user/inbox" class="text-[9px] font-black tracking-widest uppercase bg-navy text-white px-3 py-1.5 rounded-full flex items-center gap-1">
+                    <Icon name="heroicons:chat-bubble-oval-left-ellipsis-20-solid" class="w-3 h-3" />
+                    INBOX
+                  </NuxtLink>
                   <NuxtLink v-if="user?.role === 'MITRA'" to="/mitra/dashboard" class="text-[9px] font-black tracking-widest uppercase bg-navy text-white px-3 py-1.5 rounded-full">
                     DASHBOARD
+                  </NuxtLink>
+                  <NuxtLink v-if="user?.role === 'MITRA'" to="/mitra/dashboard/inbox" class="text-[9px] font-black tracking-widest uppercase bg-primary-500 text-navy px-3 py-1.5 rounded-full flex items-center gap-1">
+                    <Icon name="heroicons:chat-bubble-oval-left-ellipsis-20-solid" class="w-3 h-3" />
+                    INBOX
                   </NuxtLink>
                 </div>
 

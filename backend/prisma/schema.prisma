@@ -69,6 +69,8 @@ model User {
   userProfile   UserProfile?
   bookings      Booking[]
   reviews       Review[]
+  chatRooms        ChatRoom[]    @relation("CustomerRooms")
+  sentMessages     ChatMessage[]
 }
 
 model UserProfile {
@@ -115,6 +117,7 @@ model MitraProfile {
   bookings          Booking[]
   reviews           Review[]
   photos            MitraPhoto[]
+  chatRooms        ChatRoom[]
 
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
@@ -255,4 +258,38 @@ model Review {
   comment      String?      @db.Text
   
   createdAt    DateTime     @default(now())
+}
+
+
+// fitur chat real time socket io
+model ChatRoom {
+  id         Int           @id @default(autoincrement())
+  customerId Int           // Menyimpan ID User yang rolenya CUSTOMER
+  customer   User          @relation("CustomerRooms", fields: [customerId], references: [id])
+  
+  mitraId    Int           // Menyimpan ID dari MitraProfile
+  mitra      MitraProfile  @relation(fields: [mitraId], references: [id])
+
+  // Relasi balik ke tabel pesan (Satu room punya banyak pesan)
+  messages   ChatMessage[]
+
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+    // Kunci unik gabungan agar 1 Customer dan 1 Mitra hanya punya maksimal 1 Room Chat yang sama
+  @@unique([customerId, mitraId]) 
+}
+
+model ChatMessage {
+  id         Int      @id @default(autoincrement())
+  roomId     Int      // Menghubungkan pesan ke Room mana
+  room       ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  
+  senderId   Int      // Menyimpan ID User pengirim pesan (bisa Mitra / Customer)
+  sender     User     @relation(fields: [senderId], references: [id])
+  
+  message    String   @db.Text
+  isRead     Boolean  @default(false) // Untuk fitur tanda centang biru / belum dibaca
+
+  createdAt  DateTime @default(now())
 }

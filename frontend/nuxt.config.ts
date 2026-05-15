@@ -66,13 +66,19 @@ export default defineNuxtConfig({
       '/api': {
         target: 'http://localhost:5000/api',
         changeOrigin: true,
+      },
+      '/socket.io': {
+        target: 'http://localhost:5000/socket.io',
+        ws: true,
+        changeOrigin: true,
       }
     }
   },
 
   runtimeConfig: {
     public: {
-      apiBase: '/api'
+      apiBase: '/api',
+      socketBase: 'http://localhost:5000'
     }
   }
 })

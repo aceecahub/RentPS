@@ -3,7 +3,7 @@ import prisma from "../prisma/client.js";
 class ChatbotService {
     
     async getWelcomeMessage() {
-        return "Halo! Selamat datang di Layanan Sewa PS Tasikmalaya. Ada yang bisa dibantu?";
+        return "Halo! Selamat datang di Layanan Rent PS. Ada yang bisa dibantu?";
     }
     
     async getHelpMessage() {

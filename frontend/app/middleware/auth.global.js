@@ -3,7 +3,12 @@ export default defineNuxtRouteMiddleware((to) => {
 
   // Define public pages
   const publicPages = ['/', '/auth/login', '/auth/register', '/promos']
-  const isPublicPage = publicPages.includes(to.path) || to.path.startsWith('/mitra/') || to.path === '/mitra'
+  // /mitra (list halaman publik) dan /mitra/:id (detail toko) boleh diakses tanpa login
+  // tapi /mitra/dashboard dan sub-halamannya harus login dulu
+  const isPublicPage =
+    publicPages.includes(to.path) ||
+    to.path === '/mitra' ||
+    (to.path.startsWith('/mitra/') && !to.path.startsWith('/mitra/dashboard'))
 
   // 1. If not logged in and trying to access a restricted page
   if (!isLoggedIn.value && !isPublicPage) {
