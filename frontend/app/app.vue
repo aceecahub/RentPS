@@ -22,6 +22,7 @@ const isAdminPage = computed(() => route.path.startsWith('/admin'))
           <NuxtPage />
         </main>
         <TheFooter v-if="!isAuthPage" />
+        <TheChatbot v-if="!isAuthPage" />
       </div>
     </template>
   </div>

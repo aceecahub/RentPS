@@ -11,6 +11,7 @@ import snackRoutes from "./routes/snackRoutes.js"
 import bookingRoutes from "./routes/bookingRoutes.js"
 import userRoutes from "./routes/userRoutes.js"
 import paymentRoutes from "./routes/paymentRoutes.js"
+import chatbotRoutes from "./routes/chatbotRoutes.js"
 import { startBookingCron } from "./service/bookingExpiryServices.js"
 
 const app = express()
@@ -42,6 +43,8 @@ app.use("/api/booking", bookingRoutes)
 app.use("/api/user", userRoutes)
 // payment
 app.use("/api/payment", paymentRoutes)
+// chatbot
+app.use("/api/chatbot", chatbotRoutes)
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on http://localhost:${process.env.PORT}`)
