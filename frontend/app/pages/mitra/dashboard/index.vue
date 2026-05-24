@@ -1,16 +1,23 @@
 <script setup>
-const { user } = useAuth()
+const { user, isLoggedIn } = useAuth()
 const config = useRuntimeConfig()
+
 
 // Fetch Dashboard Stats
 const { data: statsRes, pending: statsPending } = await useFetch(`${config.public.apiBase}/mitra/stats`, {
-  query: { userId: user.value?.id }
+  key: 'mitra-stats',
+  query: computed(() => ({ userId: user.value?.id })),
+  headers: useRequestHeaders(['cookie']),
+  watch: [user]
 })
 
 // Fetch Recent Bookings
 const { data: bookingsRes, pending: bookingsPending } = await useFetch(`${config.public.apiBase}/booking/mitra`, {
+  key: 'mitra-recent-bookings',
   method: 'GET',
-  query: { userId: user.value?.id } 
+  query: computed(() => ({ userId: user.value?.id })),
+  headers: useRequestHeaders(['cookie']),
+  watch: [user]
 })
 
 const stats = computed(() => [
@@ -73,10 +80,6 @@ const recentBookings = computed(() => {
           <Icon name="heroicons:cog-6-tooth-20-solid" class="mr-2 w-5 h-5 text-gray-400" />
           Pengaturan Toko
         </NuxtLink>
-        <button class="bg-navy text-white px-6 py-3 rounded-2xl font-black text-sm hover:bg-primary-500 hover:text-navy transition-all shadow-lg shadow-navy/10 flex items-center">
-          <Icon name="heroicons:plus-20-solid" class="mr-2 w-5 h-5" />
-          Tambah Unit
-        </button>
       </div>
     </div>
 
@@ -193,19 +196,19 @@ const recentBookings = computed(() => {
               </div>
               <Icon name="heroicons:arrow-right-20-solid" class="w-5 h-5 opacity-0 group-hover:opacity-100 transition-all" />
             </NuxtLink>
-            
-            <NuxtLink to="/mitra/dashboard/store" class="flex items-center justify-between p-5 bg-gray-50 text-navy rounded-3xl hover:bg-white hover:shadow-lg transition-all group border border-transparent hover:border-gray-100">
-              <div class="flex items-center">
-                <Icon name="heroicons:computer-desktop-20-solid" class="w-6 h-6 mr-4 text-gray-400 group-hover:text-primary-500" />
-                <span class="font-black text-sm uppercase tracking-widest">Update Unit PS</span>
-              </div>
-              <Icon name="heroicons:chevron-right-20-solid" class="w-5 h-5 opacity-0 group-hover:opacity-100 transition-all" />
-            </NuxtLink>
 
             <NuxtLink to="/mitra/dashboard/income" class="flex items-center justify-between p-5 bg-gray-50 text-navy rounded-3xl hover:bg-white hover:shadow-lg transition-all group border border-transparent hover:border-gray-100">
               <div class="flex items-center">
                 <Icon name="heroicons:banknotes-20-solid" class="w-6 h-6 mr-4 text-gray-400 group-hover:text-primary-500" />
                 <span class="font-black text-sm uppercase tracking-widest">Laporan Pendapatan</span>
+              </div>
+              <Icon name="heroicons:chevron-right-20-solid" class="w-5 h-5 opacity-0 group-hover:opacity-100 transition-all" />
+            </NuxtLink>
+
+            <NuxtLink to="/mitra/dashboard/inbox" class="flex items-center justify-between p-5 bg-gray-50 text-navy rounded-3xl hover:bg-white hover:shadow-lg transition-all group border border-transparent hover:border-gray-100">
+              <div class="flex items-center">
+                <Icon name="heroicons:chat-bubble-oval-left-ellipsis-20-solid" class="w-6 h-6 mr-4 text-gray-400 group-hover:text-primary-500" />
+                <span class="font-black text-sm uppercase tracking-widest">Inbox Pesan</span>
               </div>
               <Icon name="heroicons:chevron-right-20-solid" class="w-5 h-5 opacity-0 group-hover:opacity-100 transition-all" />
             </NuxtLink>

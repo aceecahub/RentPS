@@ -1,4 +1,5 @@
 import prisma from '../prisma/client.js'
+import bcrypt from 'bcrypt'
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -105,10 +106,16 @@ export const updateUserProfile = async (req, res) => {
     });
 
     // Update nama user utama jika dikirim
-    if (name) {
+    const userUpdateData = {}
+    if (name) userUpdateData.name = name
+    if (req.body.password) {
+      userUpdateData.password = await bcrypt.hash(req.body.password, 10)
+    }
+
+    if (Object.keys(userUpdateData).length > 0) {
       await prisma.user.update({
         where: { id: parseInt(userId) },
-        data: { name }
+        data: userUpdateData
       });
     }
 

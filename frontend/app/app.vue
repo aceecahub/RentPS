@@ -18,10 +18,11 @@ const isAdminPage = computed(() => route.path.startsWith('/admin'))
     <template v-else>
       <div class="flex flex-col w-full">
         <TheNavbar v-if="!isAuthPage" />
-        <main class="flex-grow overflow-x-hidden">
+        <main class="flex-grow overflow-x-hidden pt-3">
           <NuxtPage />
         </main>
         <TheFooter v-if="!isAuthPage" />
+        <TheChatbot v-if="!isAuthPage" />
       </div>
     </template>
   </div>

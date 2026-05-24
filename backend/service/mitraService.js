@@ -97,47 +97,77 @@ export const getIncomeReport = async (mitraId, { startDate, endDate, period }) =
     const now = new Date();
     
     if (period === 'day') {
-        const startOfDay = new Date(now.setHours(0, 0, 0, 0));
-        const endOfDay = new Date(now.setHours(23, 59, 59, 999));
+        const startOfDay = new Date(now);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(now);
+        endOfDay.setHours(23, 59, 59, 999);
         whereClause.updatedAt = { gte: startOfDay, lte: endOfDay };
     } else if (period === 'month') {
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
         whereClause.updatedAt = { gte: startOfMonth, lte: endOfMonth };
     } else if (period === 'year') {
-        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const startOfYear = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
         const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
         whereClause.updatedAt = { gte: startOfYear, lte: endOfYear };
     } else if (startDate && endDate) {
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
         whereClause.updatedAt = {
-            gte: new Date(startDate),
-            lte: new Date(endDate)
+            gte: start,
+            lte: end
         };
     }
 
     const bookings = await prisma.booking.findMany({
         where: whereClause,
         include: {
-            snacks: true,
-            unit: true
+            snacks: {
+                include: {
+                    snack: true
+                }
+            },
+            unit: true,
+            user: {
+                select: { name: true }
+            }
+        },
+        orderBy: {
+            updatedAt: 'desc'
         }
     });
 
     let totalPsIncome = 0;
     let totalSnackIncome = 0;
 
-    bookings.forEach(booking => {
-        // Calculate snack income for this booking
+    const formattedBookings = bookings.map(booking => {
         const snackIncome = booking.snacks.reduce((sum, item) => {
             return sum + (parseFloat(item.priceAtBooking) * item.quantity);
         }, 0);
         
-        totalSnackIncome += snackIncome;
-        
-        // Calculate PS income (total price minus snack income, or calculate by duration)
-        // Using Independent calculation to be safe
         const psIncome = parseFloat(booking.unit.pricePerHour) * booking.durationHour;
-        totalPsIncome += psIncome;
+        
+        return {
+            id: booking.id,
+            customerName: booking.user.name,
+            unitName: booking.unit.name,
+            date: booking.updatedAt,
+            psIncome,
+            snackIncome,
+            totalIncome: psIncome + snackIncome,
+            snacks: booking.snacks.map(s => ({
+                name: s.snack.name,
+                quantity: s.quantity,
+                price: s.priceAtBooking
+            }))
+        };
+    });
+
+    formattedBookings.forEach(b => {
+        totalPsIncome += b.psIncome;
+        totalSnackIncome += b.snackIncome;
     });
 
     return {
@@ -145,6 +175,7 @@ export const getIncomeReport = async (mitraId, { startDate, endDate, period }) =
         psIncome: totalPsIncome,
         snackIncome: totalSnackIncome,
         bookingCount: bookings.length,
+        bookings: formattedBookings,
         period: period || 'custom',
         startDate: startDate || null,
         endDate: endDate || null

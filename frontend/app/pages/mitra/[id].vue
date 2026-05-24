@@ -4,7 +4,10 @@ const config = useRuntimeConfig()
 const mitraId = route.params.id
 
 // Fetch real data from backend
-const { data: response, pending, error } = await useFetch(`${config.public.apiBase}/mitra/${mitraId}`)
+const { data: response, pending, error } = await useFetch(`${config.public.apiBase}/mitra/${mitraId}`, {
+  key: `mitra-detail-${mitraId}`,
+  headers: useRequestHeaders(['cookie'])
+})
 
 const mitra = computed(() => response.value?.data || null)
 const activePhoto = ref(0)
@@ -16,6 +19,14 @@ const handleBooking = (unitId) => {
     return
   }
   navigateTo(`/booking/${mitraId}?unitId=${unitId}`)
+}
+
+const handleChat = () => {
+  if (!isLoggedIn.value) {
+    navigateTo('/auth/login')
+    return
+  }
+  navigateTo(`/chat/${mitraId}`)
 }
 
 const stats = computed(() => [
@@ -99,7 +110,7 @@ const stats = computed(() => [
 
             <!-- Profile Info -->
             <div class="bg-white p-10 rounded-[48px] border border-gray-100 shadow-xl shadow-navy/5 relative overflow-hidden group">
-              <div class="absolute -top-12 -right-12 w-48 h-48 bg-primary-50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div class="absolute -top-12 -right-12 w-48 h-48 bg-primary-50 rounded-full blur-3xl opacity-0 group-hover:opacity-10 transition-opacity"></div>
               
               <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                 <h1 class="text-5xl font-black text-navy tracking-tight leading-tight">{{ mitra.shopName }}</h1>
@@ -265,9 +276,7 @@ const stats = computed(() => [
                       <p class="font-bold text-lg leading-none group-hover/item:text-primary-400 transition-colors">{{ snack.name }}</p>
                       <p class="text-sm text-primary-100/50 font-bold tracking-wide">Rp{{ parseFloat(snack.price).toLocaleString() }}</p>
                     </div>
-                    <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity">
-                      <Icon name="heroicons:plus-20-solid" class="w-5 h-5 text-primary-500" />
-                    </div>
+                   
                   </div>
                 </div>
                 
@@ -285,12 +294,21 @@ const stats = computed(() => [
               </div>
             </div>
 
-            <!-- Help Card -->
+            <!-- Chat Card -->
             <div class="bg-gray-50 p-10 rounded-[48px] border border-gray-100 space-y-6">
-              <h4 class="text-xl font-black text-navy">Butuh Bantuan?</h4>
-              <p class="text-gray-500 text-sm font-medium leading-loose">Punya pertanyaan seputar fasilitas atau ingin mengajukan komplain? Tim support kami siap membantu 24/7.</p>
-              <button class="w-full bg-white border-2 border-navy text-navy px-8 py-4 rounded-2xl font-black text-sm hover:bg-navy hover:text-white transition-all active:scale-95">
-                Hubungi Support
+              <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 bg-navy rounded-2xl flex items-center justify-center">
+                  <Icon name="heroicons:chat-bubble-left-right-20-solid" class="w-6 h-6 text-primary-400" />
+                </div>
+                <h4 class="text-xl font-black text-navy">Tanya Mitra Langsung</h4>
+              </div>
+              <p class="text-gray-500 text-sm font-medium leading-loose">Punya pertanyaan soal ketersediaan unit, harga, atau fasilitas? Chat langsung dengan {{ mitra.shopName }} sekarang!</p>
+              <button
+                @click="handleChat"
+                class="w-full bg-navy text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-primary-500 hover:text-navy transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-navy/20"
+              >
+                <Icon name="heroicons:chat-bubble-oval-left-ellipsis-20-solid" class="w-5 h-5" />
+                Chat Sekarang
               </button>
             </div>
           </div>

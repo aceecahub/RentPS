@@ -1,5 +1,5 @@
-
 import prisma from '../prisma/client.js'
+import bcrypt from 'bcrypt'
 import { registerMitra, updateApprovalStatus, manualCloseAndOpen, operatingHours, getIncomeReport } from '../service/mitraService.js';
 
 export const getIncomeReportController = async (req, res) => {
@@ -179,8 +179,25 @@ export const updateProfile = async (req, res) => {
         latitude: latitude ? parseFloat(latitude) : null,
         longitude: longitude ? parseFloat(longitude) : null,
         npwp
+      },
+      include: {
+        user: true
       }
     });
+
+    // Update user info if name or password provided
+    const userUpdateData = {}
+    if (req.body.name) userUpdateData.name = req.body.name
+    if (req.body.password) {
+      userUpdateData.password = await bcrypt.hash(req.body.password, 10)
+    }
+
+    if (Object.keys(userUpdateData).length > 0) {
+      await prisma.user.update({
+        where: { id: result.userId },
+        data: userUpdateData
+      })
+    }
 
     return res.status(200).json({
       success: true,

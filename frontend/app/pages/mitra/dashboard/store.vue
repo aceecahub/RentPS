@@ -2,9 +2,6 @@
 const { user, isLoggedIn } = useAuth()
 const config = useRuntimeConfig()
 
-if (!isLoggedIn.value || user.value?.role !== 'MITRA') {
-  navigateTo('/')
-}
 
 const activeTab = ref('units')
 const mitraId = ref(null)
@@ -204,7 +201,16 @@ const deletePhoto = async (id) => {
 }
 
 // === PROFILE ===
-const profileForm = reactive({ shopName: '', address: '', description: '', latitude: '', longitude: '', npwp: '' })
+const profileForm = reactive({ 
+  name: user.value?.name || '',
+  password: '',
+  shopName: '', 
+  address: '', 
+  description: '', 
+  latitude: '', 
+  longitude: '', 
+  npwp: '' 
+})
 
 watchEffect(() => {
   if (mitraData.value?.shopName) {
@@ -224,6 +230,11 @@ const updateProfile = async () => {
       body: profileForm
     })
     alert('Profil toko berhasil diperbarui!')
+    // Update local storage user name if it changed
+    if (user.value.name !== profileForm.name) {
+       user.value.name = profileForm.name
+       localStorage.setItem('auth_user', JSON.stringify(user.value))
+    }
     refreshProfile()
   } catch (err) {
     alert('Gagal memperbarui profil toko')
@@ -236,6 +247,7 @@ const tabs = [
   { id: 'hours', label: 'Jam Kerja', icon: 'heroicons:clock-20-solid' },
   { id: 'photos', label: 'Galeri Foto', icon: 'heroicons:photo-20-solid' },
   { id: 'profile', label: 'Profil Toko', icon: 'heroicons:store-front-20-solid' },
+  { id: 'account', label: 'Akun & Keamanan', icon: 'heroicons:user-circle-20-solid' },
 ]
 </script>
 
@@ -647,6 +659,52 @@ const tabs = [
               <button type="submit" class="bg-navy text-white px-12 py-5 rounded-2xl font-black text-lg shadow-xl shadow-navy/20 hover:bg-primary-500 hover:text-navy transition-all active:scale-95 flex items-center">
                 <Icon name="heroicons:check-circle-20-solid" class="w-6 h-6 mr-3" />
                 Simpan Perubahan Profil
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- ACCOUNT TAB -->
+        <div v-if="activeTab === 'account'" class="space-y-10 animate-fade-in">
+          <div class="flex items-center space-x-4 mb-2">
+            <div class="w-1.5 h-8 bg-primary-500 rounded-full"></div>
+            <h2 class="text-3xl font-black text-navy tracking-tight">Pengaturan Akun Mitra</h2>
+          </div>
+
+          <form @submit.prevent="updateProfile" class="bg-white rounded-[48px] border border-gray-100 shadow-2xl shadow-navy/5 p-10 md:p-14 space-y-10 relative overflow-hidden group">
+            <div class="absolute -right-24 -top-24 w-64 h-64 bg-primary-50 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 relative z-10">
+              <div class="space-y-3">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Nama Lengkap Pengelola</label>
+                <div class="relative">
+                  <Icon name="heroicons:user-20-solid" class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 w-6 h-6" />
+                  <input v-model="profileForm.name" type="text" class="w-full bg-gray-50 border-2 border-gray-50 rounded-3xl pl-16 pr-8 py-6 text-xl font-black text-navy focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner" required>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Email Address (Primary)</label>
+                <div class="relative">
+                  <Icon name="heroicons:envelope-20-solid" class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 w-6 h-6" />
+                  <input :value="user?.email" type="email" class="w-full bg-gray-100 border-2 border-transparent rounded-3xl pl-16 pr-8 py-6 text-gray-500 font-bold cursor-not-allowed" disabled>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Password Baru (Opsional)</label>
+                <div class="relative">
+                  <Icon name="heroicons:lock-closed-20-solid" class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 w-6 h-6" />
+                  <input v-model="profileForm.password" type="password" placeholder="••••••••" class="w-full bg-gray-50 border-2 border-gray-50 rounded-3xl pl-16 pr-8 py-6 text-navy font-bold focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner">
+                </div>
+                <p class="text-[10px] text-gray-400 font-medium ml-2">Kosongkan jika tidak ingin mengubah password.</p>
+              </div>
+            </div>
+
+            <div class="flex justify-end pt-10 border-t border-gray-50 relative z-10">
+              <button type="submit" class="bg-navy text-white px-12 py-5 rounded-2xl font-black text-lg shadow-xl shadow-navy/20 hover:bg-primary-500 hover:text-navy transition-all active:scale-95 flex items-center">
+                <Icon name="heroicons:check-circle-20-solid" class="w-6 h-6 mr-3" />
+                Update Akun & Keamanan
               </button>
             </div>
           </form>
