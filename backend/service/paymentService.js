@@ -15,7 +15,7 @@ export const paymentService = {
                 gross_amount: amount
             },
             customer_details: customerDetails,
-            enabled_payments: ["credit_card", "gopay", "shopeepay", "bank_transfer", "qris"],
+            enabled_payments: ["qris"],
             callbacks: {
                 finish: `${process.env.APP_URL}/user/bookings`,
                 error: `${process.env.APP_URL}/user/bookings`,

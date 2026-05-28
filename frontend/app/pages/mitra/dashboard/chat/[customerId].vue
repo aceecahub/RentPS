@@ -284,14 +284,14 @@ useHead({
     </div>
 
     <!-- Input Area -->
-    <div class="flex-shrink-0 bg-white border-t border-gray-100 shadow-[0_-4px_24px_rgba(0,0,0,0.05)]">
-      <div class="px-4 py-4">
+    <div class="flex-shrink-0 bg-white border-t border-gray-100 shadow-[0_-4px_24px_rgba(0,0,0,0.05)] fixed bottom-0 left-0 w-full">
+      <div class="max-w-3xl mx-auto px-4 py-4">
         <div class="flex items-end gap-3">
           <div class="flex-1 bg-gray-50 border-2 border-gray-100 rounded-3xl px-5 py-3 focus-within:border-primary-400 focus-within:bg-white transition-all">
             <textarea
               v-model="newMessage"
               @keydown="handleKeydown"
-              placeholder="Balas pesan pelanggan..."
+              placeholder="Ketik pesan..."
               rows="1"
               class="w-full bg-transparent text-navy font-semibold text-sm resize-none focus:outline-none placeholder-gray-400 leading-relaxed max-h-32"
               style="min-height: 24px;"
@@ -305,7 +305,7 @@ useHead({
             <Icon name="heroicons:paper-airplane-20-solid" class="w-5 h-5" />
           </button>
         </div>
-        <p class="text-[10px] text-gray-400 font-semibold mt-2 ml-1">Enter untuk kirim · Shift+Enter untuk baris baru</p>
+        <p class="text-[10px] text-gray-400 font-semibold mt-2 ml-1">Tekan Enter untuk kirim · Shift+Enter untuk baris baru</p>
       </div>
     </div>
 

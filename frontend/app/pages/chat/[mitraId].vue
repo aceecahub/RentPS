@@ -288,7 +288,7 @@ useHead({
     </div>
 
     <!-- Input Area -->
-    <div class="flex-shrink-0 bg-white border-t border-gray-100 shadow-[0_-4px_24px_rgba(0,0,0,0.05)]">
+    <div class="flex-shrink-0 bg-white border-t border-gray-100 shadow-[0_-4px_24px_rgba(0,0,0,0.05)] fixed bottom-0 left-0 w-full">
       <div class="max-w-3xl mx-auto px-4 py-4">
         <div class="flex items-end gap-3">
           <div class="flex-1 bg-gray-50 border-2 border-gray-100 rounded-3xl px-5 py-3 focus-within:border-primary-400 focus-within:bg-white transition-all">
