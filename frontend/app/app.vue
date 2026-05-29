@@ -2,6 +2,8 @@
 const route = useRoute()
 const isAuthPage = computed(() => route.path.startsWith('/auth'))
 const isAdminPage = computed(() => route.path.startsWith('/admin'))
+const isMitraPage = computed(() => route.path.startsWith('/mitra/dashboard'))
+const isCustPage = computed(() => route.path.startsWith('/user/profile') || route.path.startsWith('/user/inbox') || route.path.startsWith('/chat'))
 </script>
 
 <template>
@@ -22,7 +24,7 @@ const isAdminPage = computed(() => route.path.startsWith('/admin'))
           <NuxtPage />
         </main>
         <TheFooter v-if="!isAuthPage" />
-        <TheChatbot v-if="!isAuthPage" />
+        <TheChatbot v-if="!isAuthPage && !isAdminPage && !isMitraPage && !isCustPage"  />
       </div>
     </template>
   </div>

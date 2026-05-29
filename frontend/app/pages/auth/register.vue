@@ -58,24 +58,24 @@ const handleRegister = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
-    <div class="max-w-4xl w-full bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col md:flex-row">
+  <div class="min-h-screen bg-slate-50/50 flex items-center justify-center px-4 py-12">
+    <div class="max-w-4xl w-full bg-white rounded-xl shadow-lg shadow-slate-200/50 border border-slate-200 overflow-hidden flex flex-col md:flex-row">
       
       <!-- Left Side: Progress & Info -->
-      <div class="md:w-1/3 bg-navy p-10 text-white flex flex-col justify-between">
+      <div class="md:w-1/3 bg-navy p-8 md:p-10 text-white flex flex-col justify-between">
         <div>
-          <NuxtLink to="/" class="flex items-center space-x-2 mb-10 group">
-            <Icon name="heroicons:arrow-left" class="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
-            <span class="text-sm font-bold text-gray-400 group-hover:text-white">Beranda</span>
+          <NuxtLink to="/" class="flex items-center space-x-1.5 mb-10 group text-slate-400 hover:text-white transition-colors">
+            <Icon name="heroicons:arrow-left-20-solid" class="w-4 h-4 transform group-hover:-translate-x-0.5 transition-transform" />
+            <span class="text-sm font-bold">Beranda</span>
           </NuxtLink>
           
-          <h2 class="text-3xl font-black mb-6 leading-tight">Daftar Akun</h2>
+          <h2 class="text-2xl lg:text-3xl font-black mb-8 leading-tight">Daftar Akun</h2>
           
           <!-- Stepper UI -->
-          <div class="space-y-8">
-            <div class="flex items-center space-x-4">
+          <div class="space-y-6">
+            <div class="flex items-center space-x-3">
               <div 
-                class="w-10 h-10 rounded-full flex items-center justify-center font-bold border-2 transition-all"
+                class="w-9 h-9 rounded-lg flex items-center justify-center font-bold border-2 transition-all text-sm"
                 :class="currentStep >= 1 ? 'bg-white text-navy border-white' : 'border-white/20 text-white/40'"
               >
                 1
@@ -86,9 +86,9 @@ const handleRegister = async () => {
               </div>
             </div>
             
-            <div v-if="role === 'MITRA'" class="flex items-center space-x-4">
+            <div v-if="role === 'MITRA'" class="flex items-center space-x-3">
               <div 
-                class="w-10 h-10 rounded-full flex items-center justify-center font-bold border-2 transition-all"
+                class="w-9 h-9 rounded-lg flex items-center justify-center font-bold border-2 transition-all text-sm"
                 :class="currentStep === 2 ? 'bg-white text-navy border-white' : 'border-white/20 text-white/40'"
               >
                 2
@@ -101,22 +101,22 @@ const handleRegister = async () => {
           </div>
         </div>
 
-        <div class="mt-20 pt-10 border-t border-white/10">
-          <p class="text-xs text-gray-400 leading-relaxed">
+        <div class="mt-16 pt-8 border-t border-white/10">
+          <p class="text-xs text-slate-400 leading-relaxed">
             Daftar sekarang untuk mulai menyewa atau kembangkan bisnis rental Anda bersama platform kami.
           </p>
         </div>
       </div>
 
       <!-- Right Side: Form Content -->
-      <div class="md:w-2/3 p-10 md:p-16">
+      <div class="md:w-2/3 p-8 md:p-12">
         <!-- Alerts -->
-        <div v-if="errorMsg" class="mb-8 p-4 bg-red-50 border border-red-100 text-red-600 text-sm rounded-2xl flex items-center animate-shake">
-          <Icon name="heroicons:exclamation-circle" class="w-5 h-5 mr-3" />
+        <div v-if="errorMsg" class="mb-6 p-3.5 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg flex items-center animate-shake">
+          <Icon name="heroicons:exclamation-circle-20-solid" class="w-4 h-4 mr-2 shrink-0" />
           {{ errorMsg }}
         </div>
-        <div v-if="successMsg" class="mb-8 p-4 bg-green-50 border border-green-100 text-green-600 text-sm rounded-2xl flex items-center">
-          <Icon name="heroicons:check-circle" class="w-5 h-5 mr-3" />
+        <div v-if="successMsg" class="mb-6 p-3.5 bg-green-50 border border-green-200 text-green-600 text-sm rounded-lg flex items-center">
+          <Icon name="heroicons:check-circle-20-solid" class="w-4 h-4 mr-2 shrink-0" />
           {{ successMsg }}
         </div>
 
@@ -124,22 +124,22 @@ const handleRegister = async () => {
           
           <!-- STEP 1: ACCOUNT INFO -->
           <div v-if="currentStep === 1" class="space-y-6">
-            <div class="mb-8">
-              <h3 class="text-2xl font-bold text-navy mb-2">Pilih Jenis Akun</h3>
-              <div class="flex p-1 bg-gray-100 rounded-2xl">
+            <div>
+              <h3 class="text-xl font-bold text-navy mb-3">Pilih Jenis Akun</h3>
+              <div class="flex p-1 bg-slate-100 rounded-lg">
                 <button 
                   type="button"
                   @click="role = 'CUSTOMER'"
-                  class="flex-1 py-3 rounded-xl text-sm font-bold transition-all"
-                  :class="role === 'CUSTOMER' ? 'bg-white text-navy shadow-md' : 'text-gray-500'"
+                  class="flex-1 py-2.5 rounded-md text-sm font-bold transition-all"
+                  :class="role === 'CUSTOMER' ? 'bg-white text-navy shadow-sm' : 'text-slate-500 hover:text-navy'"
                 >
                   Customer
                 </button>
                 <button 
                   type="button"
                   @click="role = 'MITRA'"
-                  class="flex-1 py-3 rounded-xl text-sm font-bold transition-all"
-                  :class="role === 'MITRA' ? 'bg-white text-navy shadow-md' : 'text-gray-500'"
+                  class="flex-1 py-2.5 rounded-md text-sm font-bold transition-all"
+                  :class="role === 'MITRA' ? 'bg-white text-navy shadow-sm' : 'text-slate-500 hover:text-navy'"
                 >
                   Mitra
                 </button>
@@ -148,78 +148,78 @@ const handleRegister = async () => {
 
             <div class="space-y-4">
               <div class="space-y-2">
-                <label class="text-xs font-black text-navy uppercase tracking-widest ml-1">Nama Lengkap</label>
-                <input v-model="form.name" type="text" placeholder="Masukkan nama Anda" class="input-field py-4" required>
+                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Lengkap</label>
+                <input v-model="form.name" type="text" placeholder="Masukkan nama Anda" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-navy font-bold text-sm focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all" required>
               </div>
               <div class="space-y-2">
-                <label class="text-xs font-black text-navy uppercase tracking-widest ml-1">Alamat Email</label>
-                <input v-model="form.email" type="email" placeholder="contoh@email.com" class="input-field py-4" required>
+                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Alamat Email</label>
+                <input v-model="form.email" type="email" placeholder="contoh@email.com" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-navy font-bold text-sm focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all" required>
               </div>
               <div class="space-y-2">
-                <label class="text-xs font-black text-navy uppercase tracking-widest ml-1">Password</label>
-                <input v-model="form.password" type="password" placeholder="Min. 8 karakter" class="input-field py-4" required>
+                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Password</label>
+                <input v-model="form.password" type="password" placeholder="Min. 8 karakter" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-navy font-bold text-sm focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all" required>
               </div>
             </div>
 
-            <button type="submit" class="w-full btn-primary py-4 text-lg mt-10 shadow-xl shadow-navy/20 flex items-center justify-center">
-              {{ role === 'CUSTOMER' ? 'Daftar Sekarang' : 'Lanjut ke Detail Bisnis' }}
-              <Icon v-if="role === 'MITRA'" name="heroicons:arrow-right" class="ml-2 w-5 h-5" />
+            <button type="submit" class="w-full bg-navy hover:bg-primary-600 text-white py-3 rounded-lg font-bold text-sm mt-8 shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95">
+              <span>{{ role === 'CUSTOMER' ? 'Daftar Sekarang' : 'Lanjut ke Detail Bisnis' }}</span>
+              <Icon v-if="role === 'MITRA'" name="heroicons:arrow-right-20-solid" class="w-4 h-4" />
             </button>
           </div>
 
           <!-- STEP 2: MITRA BUSINESS INFO -->
           <div v-if="currentStep === 2" class="space-y-6 animate-fade-in">
-            <h3 class="text-2xl font-bold text-navy mb-6">Informasi Bisnis Mitra</h3>
+            <h3 class="text-xl font-bold text-navy mb-4">Informasi Bisnis Mitra</h3>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-2">
-                <label class="text-xs font-black text-navy uppercase tracking-widest ml-1">Nama Toko / Rental</label>
-                <input v-model="form.shopName" type="text" placeholder="Contoh: Neo PS" class="input-field py-4" required>
+                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Toko / Rental</label>
+                <input v-model="form.shopName" type="text" placeholder="Contoh: Neo PS" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-navy font-bold text-sm focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all" required>
               </div>
               <div class="space-y-2">
-                <label class="text-xs font-black text-navy uppercase tracking-widest ml-1">NIK (Sesuai KTP)</label>
-                <input v-model="form.nik" type="text" placeholder="16 digit NIK" class="input-field py-4" required>
+                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">NIK (Sesuai KTP)</label>
+                <input v-model="form.nik" type="text" placeholder="16 digit NIK" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-navy font-bold text-sm focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all" required>
               </div>
             </div>
 
             <div class="space-y-2">
-              <label class="text-xs font-black text-navy uppercase tracking-widest ml-1">Alamat Lengkap Toko</label>
-              <textarea v-model="form.address" rows="3" placeholder="Jl. Contoh No. 123, Kota..." class="input-field py-4 resize-none" required></textarea>
+              <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Alamat Lengkap Toko</label>
+              <textarea v-model="form.address" rows="3" placeholder="Jl. Contoh No. 123, Kota..." class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-navy font-medium text-sm focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all resize-none" required></textarea>
             </div>
 
-            <div class="p-4 bg-primary-50 rounded-2xl flex items-start space-x-4">
-              <Icon name="heroicons:shield-check" class="text-primary-600 w-10 h-10 shrink-0" />
-              <p class="text-xs text-primary-700 leading-relaxed">
+            <div class="p-4 bg-primary-50 border border-primary-100 rounded-lg flex items-start space-x-3">
+              <Icon name="heroicons:shield-check-20-solid" class="text-primary-600 w-5 h-5 shrink-0 mt-0.5" />
+              <p class="text-xs text-primary-700 leading-relaxed font-medium">
                 Data Anda aman. Pendaftaran Mitra memerlukan verifikasi admin. Akun akan aktif setelah disetujui (1-2 hari kerja).
               </p>
             </div>
 
-            <div class="flex space-x-4 mt-10">
+            <div class="flex space-x-4 mt-8">
               <button 
                 type="button" 
                 @click="prevStep" 
-                class="flex-1 btn-outline py-4 flex items-center justify-center"
+                class="flex-1 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold py-3 rounded-lg text-sm transition-all flex items-center justify-center"
                 :disabled="isLoading"
               >
                 Kembali
               </button>
               <button 
                 type="submit" 
-                class="flex-[2] btn-primary py-4 text-lg shadow-xl shadow-navy/20 flex items-center justify-center"
+                class="flex-[2] bg-navy hover:bg-primary-600 text-white py-3 rounded-lg font-bold text-sm shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95"
                 :disabled="isLoading"
               >
-                <Icon v-if="isLoading" name="svg-spinners:ring-resize" class="w-6 h-6 mr-2" />
-                {{ isLoading ? 'Mendaftar...' : 'Selesaikan Pendaftaran' }}
+                <Icon v-if="isLoading" name="svg-spinners:ring-resize" class="w-4 h-4" />
+                <span>{{ isLoading ? 'Mendaftar...' : 'Selesaikan Pendaftaran' }}</span>
               </button>
             </div>
           </div>
 
         </form>
 
-        <div class="mt-12 text-center">
-          <p class="text-gray-500 text-sm">
+        <div class="mt-8 text-center">
+          <p class="text-slate-500 text-sm font-medium">
             Sudah punya akun? 
-            <NuxtLink to="/auth/login" class="text-navy font-bold hover:underline">Masuk di sini</NuxtLink>
+            <NuxtLink to="/auth/login" class="text-navy font-bold hover:text-primary-600 ml-1 transition-colors">Masuk di sini</NuxtLink>
           </p>
         </div>
       </div>
@@ -243,5 +243,14 @@ const handleRegister = async () => {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+:focus-visible {
+  outline: 2px solid theme('colors.primary.400');
+  outline-offset: 2px;
 }
 </style>

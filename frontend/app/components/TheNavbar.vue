@@ -18,33 +18,25 @@ if (process.client) {
 
 <template>
   <!-- Wrapper agar konten bawah tidak melonjak -->
-  <div class="relative z-[60] h-20">
+  <div class="relative z-[60] h-16">
     <nav 
       :class="[
-        'fixed left-0 right-0 z-50 transition-all duration-700 ease-in-out px-4',
+        'fixed left-0 right-0 top-0 z-50 transition-all duration-300 ease-in-out px-4 sm:px-6 lg:px-8 bg-white border-b',
         scrolled 
-          ? 'top-4' 
-          : 'top-0'
+          ? 'py-2 shadow-sm border-slate-200' 
+          : 'py-3.5 border-slate-100'
       ]"
     >
-      <div 
-        :class="[
-          'mx-auto transition-all duration-700 ease-in-out border-b border-transparent',
-          scrolled 
-            ? 'max-w-5xl bg-white/70 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[2.5rem] border-white/40 py-2 px-2' 
-            : 'max-w-full bg-white py-4 px-6 sm:px-10'
-        ]"
-      >
-        <div class="flex justify-between items-center h-14">
+      <div class="max-w-7xl mx-auto flex justify-between items-center h-12 w-full">
           
           <!-- LEFT: Logo -->
           <div class="flex items-center flex-shrink-0">
             <NuxtLink to="/" class="group flex items-center space-x-3">
               <div :class="[
-                'bg-navy flex items-center justify-center transition-all duration-500 shadow-lg shadow-navy/20',
-                scrolled ? 'w-10 h-10 rounded-xl' : 'w-12 h-12 rounded-2xl group-hover:rotate-12 group-hover:scale-110'
+                'bg-navy flex items-center justify-center transition-all duration-300 shadow-sm',
+                scrolled ? 'w-9 h-9 rounded-lg' : 'w-10 h-10 rounded-lg'
               ]">
-                <Icon name="heroicons:bolt-20-solid" class="text-primary-400 w-6 h-6" />
+                <Icon name="heroicons:bolt-20-solid" class="text-primary-400 w-5 h-5" />
               </div>
               <span class="text-xl font-black tracking-tighter text-navy uppercase flex items-center">
                 Rent<span class="text-primary-500">PS</span>
@@ -52,16 +44,16 @@ if (process.client) {
             </NuxtLink>
           </div>
 
-          <!-- CENTER: Desktop Menu (Traveloka Style) -->
-          <div class="hidden md:flex items-center bg-gray-100/50 p-1.5 rounded-full border border-gray-200/50">
+          <!-- CENTER: Desktop Menu -->
+          <div class="hidden md:flex items-center bg-slate-100/50 p-1 rounded-lg border border-slate-200/50">
             <NuxtLink 
               v-for="item in menuItems" 
               :key="item.path" 
               :to="item.path"
-              class="relative px-6 py-2 rounded-full text-gray-500 font-bold transition-all text-sm flex items-center space-x-2 hover:text-navy group"
+              class="relative px-5 py-1.5 rounded-md text-slate-500 font-bold transition-all text-sm flex items-center space-x-2 hover:text-navy group"
               active-class="!text-navy bg-white shadow-sm"
             >
-              <Icon :name="item.icon" class="w-4 h-4 opacity-70 group-hover:scale-110 transition-transform" />
+              <Icon :name="item.icon" class="w-4 h-4 opacity-70 group-hover:scale-105 transition-transform" />
               <span>{{ item.name }}</span>
             </NuxtLink>
           </div>
@@ -69,33 +61,33 @@ if (process.client) {
           <!-- RIGHT: Auth & Profile -->
           <div class="flex items-center space-x-2">
             <template v-if="!isLoggedIn">
-              <NuxtLink to="/auth/login" class="hidden sm:block text-navy font-bold text-sm px-5 py-2.5 rounded-full hover:bg-gray-100 transition-colors">
+              <NuxtLink to="/auth/login" class="hidden sm:block text-navy font-bold text-sm px-4 py-2 rounded-lg hover:bg-slate-100 transition-colors">
                 Log In
               </NuxtLink>
-              <NuxtLink to="/auth/register" class="bg-navy text-white px-7 py-2.5 rounded-full font-bold text-sm transition-all hover:bg-primary-500 hover:text-navy hover:shadow-xl hover:shadow-primary-500/20 active:scale-95">
+              <NuxtLink to="/auth/register" class="bg-navy text-white px-5 py-2 rounded-lg font-bold text-sm transition-all hover:bg-primary-600 active:scale-95 shadow-sm">
                 Join Now
               </NuxtLink>
             </template>
 
             <template v-else>
-              <div class="flex items-center bg-gray-50 p-1 rounded-2xl border border-gray-100">
+              <div class="flex items-center bg-slate-50 p-1 rounded-lg border border-slate-200">
                 <!-- Badges (Hidden on mobile scroll) -->
-                <div v-if="!scrolled" class=" lg:flex items-center space-x-1 mr-3 pl-2">
-                  <NuxtLink v-if="user?.role === 'ADMIN'" to="/admin/dashboard" class="text-[9px] font-black tracking-widest uppercase bg-primary-500 text-navy px-3 py-1.5 rounded-full">
+                <div v-if="!scrolled" class=" lg:flex items-center space-x-1.5 mr-3 pl-2">
+                  <NuxtLink v-if="user?.role === 'ADMIN'" to="/admin/dashboard" class="text-[10px] font-bold bg-primary-500 text-navy px-2.5 py-1 rounded">
                     DASHBOARD
                   </NuxtLink>
-                  <NuxtLink v-if="user?.role === 'CUSTOMER'" to="/user/bookings" class="text-[9px] font-black tracking-widest uppercase bg-primary-500 text-navy px-3 py-1.5 rounded-full">
+                  <NuxtLink v-if="user?.role === 'CUSTOMER'" to="/user/bookings" class="text-[10px] font-bold bg-primary-500 text-navy px-2.5 py-1 rounded">
                     MY ORDER
                   </NuxtLink>
-                  <NuxtLink v-if="user?.role === 'CUSTOMER'" to="/user/inbox" class="text-[9px] font-black tracking-widest uppercase bg-navy text-white px-3 py-1.5 rounded-full flex items-center gap-1">
-                    <Icon name="heroicons:chat-bubble-oval-left-ellipsis-20-solid" class="w-3 h-3" />
+                  <NuxtLink v-if="user?.role === 'CUSTOMER'" to="/user/inbox" class="text-[10px] font-bold bg-navy text-white px-2.5 py-1 rounded flex items-center gap-1">
+                    <Icon name="heroicons:chat-bubble-oval-left-ellipsis-20-solid" class="w-3.5 h-3.5" />
                     INBOX
                   </NuxtLink>
-                  <NuxtLink v-if="user?.role === 'MITRA'" to="/mitra/dashboard" class="text-[9px] font-black tracking-widest uppercase bg-navy text-white px-3 py-1.5 rounded-full">
+                  <NuxtLink v-if="user?.role === 'MITRA'" to="/mitra/dashboard" class="text-[10px] font-bold bg-navy text-white px-2.5 py-1 rounded">
                     DASHBOARD
                   </NuxtLink>
-                  <NuxtLink v-if="user?.role === 'MITRA'" to="/mitra/dashboard/inbox" class="text-[9px] font-black tracking-widest uppercase bg-primary-500 text-navy px-3 py-1.5 rounded-full flex items-center gap-1">
-                    <Icon name="heroicons:chat-bubble-oval-left-ellipsis-20-solid" class="w-3 h-3" />
+                  <NuxtLink v-if="user?.role === 'MITRA'" to="/mitra/dashboard/inbox" class="text-[10px] font-bold bg-primary-500 text-navy px-2.5 py-1 rounded flex items-center gap-1">
+                    <Icon name="heroicons:chat-bubble-oval-left-ellipsis-20-solid" class="w-3.5 h-3.5" />
                     INBOX
                   </NuxtLink>
                 </div>
@@ -105,30 +97,28 @@ if (process.client) {
                   :to="user?.role === 'CUSTOMER' ? '/user/profile' : '#'"
                   class="group flex items-center space-x-2 pr-2"
                 >
-                  <div class="w-9 h-9 rounded-xl bg-white border border-gray-200 overflow-hidden group-hover:border-primary-500 transition-colors shadow-sm">
+                  <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 overflow-hidden group-hover:border-primary-500 transition-colors shadow-sm">
                     <img v-if="user?.avatarUrl" :src="user.avatarUrl" :alt="user.name" class="w-full h-full object-cover" />
-                    <div v-else class="w-full h-full flex items-center justify-center bg-gray-50">
-                      <Icon name="heroicons:user-20-solid" class="text-navy w-5 h-5" />
+                    <div v-else class="w-full h-full flex items-center justify-center bg-slate-50">
+                      <Icon name="heroicons:user-20-solid" class="text-navy w-4 h-4" />
                     </div>
                   </div>
                   <div class="hidden sm:block text-left leading-tight">
-                    <p class="text-xs font-black text-navy">{{ user?.name?.split(' ')[0] }}</p>
-                    <p class="text-[8px] text-gray-400 uppercase font-bold tracking-tighter">{{ user?.role }}</p>
+                    <p class="text-xs font-bold text-navy">{{ user?.name?.split(' ')[0] }}</p>
+                    <p class="text-[8px] text-slate-400 uppercase font-bold tracking-tighter">{{ user?.role }}</p>
                   </div>
                 </NuxtLink>
 
                 <!-- Logout -->
                 <button 
                   @click="logout" 
-                  class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-white rounded-xl transition-all"
+                  class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-white rounded-lg transition-all"
                 >
-                  <Icon name="heroicons:arrow-right-on-rectangle-20-solid" class="w-5 h-5" />
+                  <Icon name="heroicons:arrow-right-on-rectangle-20-solid" class="w-4 h-4" />
                 </button>
               </div>
             </template>
           </div>
-
-        </div>
       </div>
     </nav>
   </div>
@@ -137,11 +127,15 @@ if (process.client) {
 <style scoped>
 /* Transisi halus untuk semua elemen didalam nav */
 nav * {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Efek active menu yang smooth */
 .router-link-active {
-  transform: translateY(-1px);
+  transform: translateY(-0.5px);
+}
+
+:focus-visible {
+  outline: 2px solid theme('colors.primary.400');
+  outline-offset: 2px;
 }
 </style>

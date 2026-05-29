@@ -36,67 +36,67 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-white">
+  <div class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-slate-50/50">
     <!-- Abstract Background Elements -->
     <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-      <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-primary-500/10 blur-[120px] rounded-full animate-pulse"></div>
-      <div class="absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] bg-navy/5 blur-[150px] rounded-full"></div>
+      <div class="absolute -top-[10%] -left-[10%] w-[30%] h-[30%] bg-primary-500/5 blur-[100px] rounded-full"></div>
+      <div class="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-navy/5 blur-[120px] rounded-full"></div>
     </div>
 
     <div class="max-w-md w-full relative z-10">
-      <div class="bg-white rounded-[48px] shadow-2xl shadow-navy/10 border border-gray-100 overflow-hidden transform transition-all hover:shadow-navy/20">
-        <div class="p-10 md:p-14">
+      <div class="bg-white rounded-xl shadow-lg shadow-slate-200/50 border border-slate-200 overflow-hidden transition-all hover:shadow-xl hover:shadow-slate-200/60">
+        <div class="p-8 md:p-10">
           <!-- Logo & Back Button -->
-          <div class="flex flex-col items-center mb-12">
-            <NuxtLink to="/" class="group inline-flex items-center space-x-2 text-gray-400 hover:text-navy transition-all mb-10 font-black text-[10px] uppercase tracking-[0.2em]">
-              <Icon name="heroicons:arrow-left-20-solid" class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" />
-              <span>Back to Home</span>
+          <div class="flex flex-col items-center mb-8">
+            <NuxtLink to="/" class="group inline-flex items-center space-x-1.5 text-slate-500 hover:text-navy transition-all mb-8 font-bold text-xs uppercase tracking-wider">
+              <Icon name="heroicons:arrow-left-20-solid" class="w-4 h-4 transform group-hover:-translate-x-0.5 transition-transform" />
+              <span>Kembali ke Beranda</span>
             </NuxtLink>
             
-            <div class="w-20 h-20 bg-navy rounded-[28px] flex items-center justify-center mb-6 shadow-xl shadow-navy/20 transform hover:rotate-12 transition-transform cursor-pointer">
-              <Icon name="heroicons:bolt-20-solid" class="text-primary-400 w-10 h-10" />
+            <div class="w-16 h-16 bg-navy rounded-xl flex items-center justify-center mb-4 shadow-md cursor-pointer">
+              <Icon name="heroicons:bolt-20-solid" class="text-primary-400 w-8 h-8" />
             </div>
-            <h2 class="text-4xl font-black text-navy tracking-tight">Welcome Back</h2>
-            <p class="text-gray-400 font-medium mt-2">Masuk ke dashboard RentPS Anda</p>
+            <h2 class="text-2xl lg:text-3xl font-black text-navy tracking-tight">Selamat Datang</h2>
+            <p class="text-slate-500 text-sm font-medium mt-1">Masuk ke dashboard RentPS Anda</p>
           </div>
 
           <!-- Error Alert -->
           <Transition name="fade">
-            <div v-if="errorMsg" class="mb-8 p-4 bg-red-50 border border-red-100 text-red-600 text-sm rounded-2xl flex items-center font-bold">
-              <Icon name="heroicons:exclamation-circle-20-solid" class="w-5 h-5 mr-3 shrink-0" />
+            <div v-if="errorMsg" class="mb-6 p-3.5 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg flex items-center font-bold">
+              <Icon name="heroicons:exclamation-circle-20-solid" class="w-4 h-4 mr-2 shrink-0" />
               {{ errorMsg }}
             </div>
           </Transition>
 
           <!-- Login Form -->
-          <form @submit.prevent="handleLogin" class="space-y-8">
-            <div class="space-y-3">
-              <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Email Address</label>
+          <form @submit.prevent="handleLogin" class="space-y-6">
+            <div class="space-y-2">
+              <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Alamat Email</label>
               <div class="relative">
-                <Icon name="heroicons:envelope-20-solid" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 w-5 h-5" />
+                <Icon name="heroicons:envelope-20-solid" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                 <input 
                   v-model="email" 
                   type="email" 
                   placeholder="name@company.com" 
-                  class="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl pl-14 pr-6 py-4 text-navy font-black focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner"
+                  class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-11 pr-4 py-3 text-navy font-bold text-sm focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                   :disabled="isLoading"
                   required
                 >
               </div>
             </div>
             
-            <div class="space-y-3">
-              <div class="flex justify-between items-center px-1">
-                <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Password</label>
-                <a href="#" class="text-[10px] font-black text-primary-500 hover:text-navy uppercase tracking-widest transition-colors">Forgot?</a>
+            <div class="space-y-2">
+              <div class="flex justify-between items-center px-0.5">
+                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Password</label>
+                <a href="#" class="text-xs font-bold text-primary-600 hover:text-navy uppercase tracking-wider transition-colors">Lupa?</a>
               </div>
               <div class="relative">
-                <Icon name="heroicons:lock-closed-20-solid" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 w-5 h-5" />
+                <Icon name="heroicons:lock-closed-20-solid" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                 <input 
                   v-model="password" 
                   type="password" 
                   placeholder="••••••••" 
-                  class="w-full bg-gray-50 border-2 border-gray-50 rounded-2xl pl-14 pr-6 py-4 text-navy font-black focus:outline-none focus:border-primary-500 focus:bg-white transition-all shadow-inner"
+                  class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-11 pr-4 py-3 text-navy font-bold text-sm focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                   :disabled="isLoading"
                   required
                 >
@@ -105,30 +105,30 @@ const handleLogin = async () => {
 
             <button 
               type="submit" 
-              class="w-full bg-navy text-white py-5 rounded-2xl font-black text-lg shadow-xl shadow-navy/20 hover:bg-primary-500 hover:text-navy active:scale-[0.98] transition-all flex items-center justify-center group"
+              class="w-full bg-navy hover:bg-primary-600 text-white py-3 rounded-lg font-bold text-sm transition-all active:scale-95 shadow-sm flex items-center justify-center gap-2"
               :disabled="isLoading"
             >
-              <Icon v-if="isLoading" name="svg-spinners:ring-resize" class="w-6 h-6 mr-3" />
-              <span v-else class="flex items-center">
+              <Icon v-if="isLoading" name="svg-spinners:ring-resize" class="w-4 h-4" />
+              <span v-else class="flex items-center gap-1.5">
                 Log In
-                <Icon name="heroicons:arrow-right-20-solid" class="ml-2 w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
+                <Icon name="heroicons:arrow-right-20-solid" class="w-4 h-4" />
               </span>
             </button>
           </form>
 
           <!-- Register Link -->
-          <div class="mt-12 text-center">
-            <p class="text-gray-400 font-bold text-sm">
+          <div class="mt-8 text-center">
+            <p class="text-slate-500 font-medium text-sm">
               Belum punya akun? 
-              <NuxtLink to="/auth/register" class="text-navy font-black hover:text-primary-500 transition-colors ml-1 underline underline-offset-4 decoration-primary-500 decoration-2">Daftar Sekarang</NuxtLink>
+              <NuxtLink to="/auth/register" class="text-navy font-bold hover:text-primary-600 transition-colors ml-1 underline underline-offset-4 decoration-primary-500 decoration-2">Daftar Sekarang</NuxtLink>
             </p>
           </div>
         </div>
         
         <!-- Footer Info -->
-        <div class="bg-gray-50/50 p-8 text-center border-t border-gray-100/50">
-          <p class="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] leading-relaxed">
-            By logging in, you agree to our <br> <span class="text-gray-400">Terms of Service & Privacy Policy</span>
+        <div class="bg-slate-50 p-6 text-center border-t border-slate-100">
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-relaxed">
+            Dengan masuk, Anda menyetujui <br> <span class="text-slate-500">Ketentuan Layanan & Kebijakan Privasi kami</span>
           </p>
         </div>
       </div>
@@ -142,5 +142,14 @@ const handleLogin = async () => {
 }
 .fade-enter-from, .fade-leave-to {
   opacity: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+:focus-visible {
+  outline: 2px solid theme('colors.primary.400');
+  outline-offset: 2px;
 }
 </style>
